@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+:root {
+  /* Green palette */
+  --green-olive: #5b6e2f;
+  --green-sage: #8ea081;
+  --green-forest: #1f9d51;
+  --green-moss: #8ba14f;
+  --green-khaki: #c2bd6b;
+  --green-hunter: #22402f;
+  --green-hunter-deep: #172a1f;
+
+  /* App committed to a single (green) look. */
+  --background: var(--green-hunter);
+  --foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .no-print,
+  header.print\:hidden {
+    display: none !important;
+  }
+
+  .break-after-page {
+    break-after: page;
+  }
+
+  .break-before-page {
+    break-before: page;
+  }
+}
