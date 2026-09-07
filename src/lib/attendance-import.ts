@@ -53,9 +53,17 @@ function parseHeaderDate(
   const text = String(effective).trim();
   if (!text) return null;
 
+  // `new Date(string)` parses as local wall-clock time. Reading it back with
+  // UTC getters (as `toDateOnlyUTC` does) shifts the calendar date by a day
+  // whenever the server's timezone is ahead of UTC. Read the calendar date
+  // back with LOCAL getters instead, then rebuild it as UTC midnight — that
+  // preserves the date JS parsed regardless of the server's timezone.
+  const asUtcMidnight = (d: Date) =>
+    new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+
   if (/\d{4}/.test(text)) {
     const parsed = new Date(text);
-    if (!Number.isNaN(parsed.getTime())) return toDateOnlyUTC(parsed);
+    if (!Number.isNaN(parsed.getTime())) return asUtcMidnight(parsed);
   }
 
   const match =
@@ -67,7 +75,7 @@ function parseHeaderDate(
     const day = Number(isFirstNumeric ? a : b);
     const monthName = isFirstNumeric ? b : a;
     const parsed = new Date(`${monthName} ${day}, ${fallbackYear}`);
-    if (!Number.isNaN(parsed.getTime())) return toDateOnlyUTC(parsed);
+    if (!Number.isNaN(parsed.getTime())) return asUtcMidnight(parsed);
   }
 
   warnings.push(`Could not parse date header "${text}" (cell ${address}).`);
