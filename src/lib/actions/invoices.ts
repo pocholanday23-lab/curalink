@@ -41,6 +41,13 @@ function readLines(formData: FormData): ClientInvoiceLine[] {
   return out;
 }
 
+function dateOrNull(formData: FormData, key: string): Date | null {
+  const s = str(formData, key);
+  if (!s) return null;
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
 type ParsedInvoice = {
   number: string;
   clientId: string;
@@ -51,6 +58,9 @@ type ParsedInvoice = {
   coverageNote: string | null;
   notes: string | null;
   payPeriodIds: string[];
+  billedFrom: Date | null;
+  billedTo: Date | null;
+  previousInvoiceId: string | null;
   lineItems: ClientInvoiceLine[];
   totalAmount: number;
 };
@@ -87,6 +97,9 @@ async function parseInvoice(
       coverageNote: str(formData, "coverageNote"),
       notes: str(formData, "notes"),
       payPeriodIds,
+      billedFrom: dateOrNull(formData, "billedFrom"),
+      billedTo: dateOrNull(formData, "billedTo"),
+      previousInvoiceId: str(formData, "previousInvoiceId"),
       lineItems,
       totalAmount: round2(
         lineItems.reduce((sum, l) => sum + l.amount, 0)
@@ -122,6 +135,9 @@ export async function createInvoiceAction(
       coverageNote: data.coverageNote,
       notes: data.notes,
       payPeriodIds: data.payPeriodIds,
+      billedFrom: data.billedFrom,
+      billedTo: data.billedTo,
+      previousInvoiceId: data.previousInvoiceId,
       lineItems: asJson(data.lineItems),
       totalAmount: data.totalAmount,
     },
@@ -163,6 +179,9 @@ export async function updateInvoiceAction(
       coverageNote: data.coverageNote,
       notes: data.notes,
       payPeriodIds: data.payPeriodIds,
+      billedFrom: data.billedFrom,
+      billedTo: data.billedTo,
+      previousInvoiceId: data.previousInvoiceId,
       lineItems: asJson(data.lineItems),
       totalAmount: data.totalAmount,
     },

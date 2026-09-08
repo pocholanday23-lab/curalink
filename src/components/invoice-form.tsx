@@ -22,7 +22,10 @@ export type InvoiceFormValues = {
   billToAddress: string;
   coverageNote: string;
   notes: string;
-  payPeriodIds: string[];
+  billedFrom: string;
+  billedTo: string;
+  previousInvoiceId: string;
+  billedLabel: string;
   lines: ClientInvoiceLine[];
 };
 
@@ -59,9 +62,23 @@ export function InvoiceForm({
     <form action={formAction} className="flex flex-col gap-5">
       <ErrorText>{state?.error}</ErrorText>
 
-      {defaultValues.payPeriodIds.map((id) => (
-        <input key={id} type="hidden" name="payPeriodId" value={id} />
-      ))}
+      <input type="hidden" name="billedFrom" value={defaultValues.billedFrom} />
+      <input type="hidden" name="billedTo" value={defaultValues.billedTo} />
+      <input
+        type="hidden"
+        name="previousInvoiceId"
+        value={defaultValues.previousInvoiceId}
+      />
+
+      {defaultValues.billedLabel && (
+        <p className="text-sm opacity-70">
+          Cost of Salary cycle: <strong>{defaultValues.billedLabel}</strong>
+          {defaultValues.previousInvoiceId
+            ? " · advance-paid line carried from the selected previous invoice"
+            : ""}
+          . Change it in the &ldquo;Load suggested lines&rdquo; box above.
+        </p>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Invoice number" htmlFor="number">

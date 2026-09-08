@@ -23,7 +23,7 @@ export default async function InvoiceViewPage({
 
   const [company, breakdown] = await Promise.all([
     getCompanySettings(),
-    computeInvoiceBreakdown(invoice.payPeriodIds),
+    computeInvoiceBreakdown(invoice.billedFrom, invoice.billedTo),
   ]);
 
   return (

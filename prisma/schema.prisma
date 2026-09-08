@@ -206,21 +206,24 @@ model CompanySettings {
 }
 
 model ClientInvoice {
-  id            String   @id @default(cuid())
-  number        String   @unique
-  clientId      String
-  client        Client   @relation(fields: [clientId], references: [id])
-  invoiceDate   DateTime
-  currency      String   @default("USD")
-  billToName    String
-  billToAddress String?
-  coverageNote  String?
-  lineItems     Json
-  totalAmount   Decimal  @db.Decimal(14, 2)
-  payPeriodIds  String[]
-  notes         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                String    @id @default(cuid())
+  number            String    @unique
+  clientId          String
+  client            Client    @relation(fields: [clientId], references: [id])
+  invoiceDate       DateTime
+  currency          String    @default("USD")
+  billToName        String
+  billToAddress     String?
+  coverageNote      String?
+  lineItems         Json
+  totalAmount       Decimal   @db.Decimal(14, 2)
+  payPeriodIds      String[]
+  billedFrom        DateTime? @db.Date
+  billedTo          DateTime? @db.Date
+  previousInvoiceId String?
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([clientId])
 }

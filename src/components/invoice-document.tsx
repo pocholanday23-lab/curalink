@@ -157,7 +157,9 @@ export function InvoiceDocument({
 
           <h3 className="mb-1 text-base font-semibold">Breakdown</h3>
 
-          <p className="mt-3 text-sm font-medium">Payroll Actuals</p>
+          <p className="mt-3 text-sm font-medium">
+            Actual Cost of Salary — {breakdown.cycleLabel}
+          </p>
           <div className="overflow-x-auto">
           <table className="mt-1 w-full border-collapse text-xs">
             <thead>
@@ -168,53 +170,43 @@ export function InvoiceDocument({
                 <th className="border border-black/20 px-2 py-1 text-left">
                   First Name
                 </th>
-                {breakdown.periodColumns.map((c) => (
-                  <th
-                    key={c.id}
-                    className="border border-black/20 px-2 py-1 text-center"
-                  >
-                    {c.label}
-                  </th>
-                ))}
                 <th className="border border-black/20 px-2 py-1 text-center">
-                  Total Days
+                  Present
                 </th>
                 <th className="border border-black/20 px-2 py-1 text-center">
-                  Max Days
+                  Absent
+                </th>
+                <th className="border border-black/20 px-2 py-1 text-center">
+                  Days Worked
                 </th>
                 <th className="border border-black/20 px-2 py-1 text-right">
-                  Max Payout
+                  Monthly Rate
                 </th>
                 <th className="border border-black/20 px-2 py-1 text-right">
-                  Payout
+                  Prorated
                 </th>
               </tr>
             </thead>
             <tbody>
-              {breakdown.actuals.map((r) => (
-                <tr key={r.employeeId}>
+              {breakdown.actuals.map((r, i) => (
+                <tr key={i}>
                   <td className="border border-black/20 px-2 py-1">
                     {r.lastName}
                   </td>
                   <td className="border border-black/20 px-2 py-1">
                     {r.firstName}
                   </td>
-                  {breakdown.periodColumns.map((c) => (
-                    <td
-                      key={c.id}
-                      className="border border-black/20 px-2 py-1 text-center"
-                    >
-                      {r.daysByPeriod[c.id] ?? 0}
-                    </td>
-                  ))}
                   <td className="border border-black/20 px-2 py-1 text-center">
-                    {r.totalDays}
+                    {r.present}
                   </td>
                   <td className="border border-black/20 px-2 py-1 text-center">
-                    {breakdown.maxDays}
+                    {r.absent}
+                  </td>
+                  <td className="border border-black/20 px-2 py-1 text-center">
+                    {r.worked}
                   </td>
                   <td className="border border-black/20 px-2 py-1 text-right tabular-nums">
-                    {formatCurrency(r.maxPayout)}
+                    {formatCurrency(r.rate)}
                   </td>
                   <td className="border border-black/20 px-2 py-1 text-right tabular-nums">
                     {formatCurrency(r.payout)}
@@ -222,14 +214,11 @@ export function InvoiceDocument({
                 </tr>
               ))}
               <tr className="bg-black/[0.06] font-semibold">
-                <td
-                  className="border border-black/20 px-2 py-1"
-                  colSpan={2 + breakdown.periodColumns.length + 2}
-                >
+                <td className="border border-black/20 px-2 py-1" colSpan={5}>
                   Total
                 </td>
                 <td className="border border-black/20 px-2 py-1 text-right tabular-nums">
-                  {formatCurrency(breakdown.actualsTotals.maxPayout)}
+                  {formatCurrency(breakdown.actualsTotals.rate)}
                 </td>
                 <td className="border border-black/20 px-2 py-1 text-right tabular-nums">
                   {formatCurrency(breakdown.actualsTotals.payout)}
@@ -239,7 +228,9 @@ export function InvoiceDocument({
           </table>
           </div>
 
-          <p className="mt-5 text-sm font-medium">Payroll Projections</p>
+          <p className="mt-5 text-sm font-medium">
+            Advance Salary — active staff monthly rate
+          </p>
           <div className="overflow-x-auto">
           <table className="mt-1 w-full border-collapse text-xs">
             <thead>
