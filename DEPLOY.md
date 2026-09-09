@@ -14,7 +14,7 @@ different for this app so they don't collide:
 | Thing | This app uses |
 | --- | --- |
 | Port (a numbered "door") | **3001** |
-| Web address | a **subdomain**, e.g. `hr.yourdomain.com` |
+| Web address | a **subdomain**, e.g. `hr.curalink.pro` |
 | Folder on the server | `/var/www/curalink` |
 | Process name | `curalink` |
 
@@ -151,7 +151,7 @@ A simple text editor opens. Paste this in, then fill the blanks:
 DATABASE_URL="PASTE FROM YOUR PC .env"
 DATABASE_URL_UNPOOLED="PASTE FROM YOUR PC .env"
 AUTH_SECRET="RUN THE COMMAND BELOW AND PASTE THE RESULT"
-AUTH_URL="https://hr.yourdomain.com"
+AUTH_URL="https://hr.curalink.pro"
 AUTH_TRUST_HOST="true"
 ```
 
@@ -233,7 +233,7 @@ In Hostinger hPanel:
 1. Go to **Domains** → your domain → **DNS / Nameservers** (or **DNS Zone**).
 2. Add a new record:
    - **Type:** `A`
-   - **Name / Host:** `hr` (this makes `hr.yourdomain.com`)
+   - **Name / Host:** `hr` (this makes `hr.curalink.pro`)
    - **Points to / Value:** your VPS IP address (the same `123.45.67.89`)
    - **TTL:** leave default
 3. Save.
@@ -242,7 +242,7 @@ DNS can take anywhere from 1 minute to a couple of hours to spread. Check from
 the VPS:
 
 ```bash
-dig +short hr.yourdomain.com
+dig +short hr.curalink.pro
 ```
 
 When that prints your VPS IP, you're ready for the next step. (If it prints
@@ -252,7 +252,7 @@ nothing, wait and try again.)
 
 ## Step 10 — Set up Nginx (the "traffic director")
 
-Nginx listens on the normal web ports (80/443) and forwards `hr.yourdomain.com`
+Nginx listens on the normal web ports (80/443) and forwards `hr.curalink.pro`
 to your app on port 3001. It leaves your other site's config alone.
 
 ```bash
@@ -260,7 +260,7 @@ sudo cp /var/www/curalink/deploy/nginx.conf.example /etc/nginx/sites-available/c
 sudo nano /etc/nginx/sites-available/curalink
 ```
 
-In the editor, change **`hr.yourdomain.com`** (appears once) to your real
+In the editor, change **`hr.curalink.pro`** (appears once) to your real
 subdomain. Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
 
 Turn it on:
@@ -273,7 +273,7 @@ sudo systemctl reload nginx
 
 **You should see:** from `nginx -t`, `syntax is ok` and `test is successful`.
 
-Now visit `http://hr.yourdomain.com` in your browser — you should reach the
+Now visit `http://hr.curalink.pro` in your browser — you should reach the
 Curalink login page (no padlock yet; that's Step 11).
 
 ---
@@ -284,7 +284,7 @@ The app's login **requires** HTTPS, so this step is not optional.
 
 ```bash
 sudo apt-get install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d hr.yourdomain.com
+sudo certbot --nginx -d hr.curalink.pro
 ```
 
 Answer the prompts:
@@ -307,7 +307,7 @@ sudo ufw allow 'Nginx Full'
 
 ## Step 12 — Open it and log in
 
-Go to **`https://hr.yourdomain.com`** — you should see a padlock and the login
+Go to **`https://hr.curalink.pro`** — you should see a padlock and the login
 page. Sign in:
 
 - Username: `pocholanday`
@@ -369,7 +369,7 @@ sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/curalink
 sudo nano /etc/nginx/sites-available/curalink  # set your subdomain
 sudo ln -s /etc/nginx/sites-available/curalink /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d hr.yourdomain.com
+sudo certbot --nginx -d hr.curalink.pro
 
 # every update after that
 cd /var/www/curalink && git pull && npm ci && npm run build && pm2 restart curalink

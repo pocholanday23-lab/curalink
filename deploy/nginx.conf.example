@@ -2,15 +2,15 @@
 # Save as /etc/nginx/sites-available/curalink, then:
 #   sudo ln -s /etc/nginx/sites-available/curalink /etc/nginx/sites-enabled/
 #   sudo nginx -t && sudo systemctl reload nginx
-#   sudo certbot --nginx -d hr.yourdomain.com     # adds the HTTPS block for you
+#   sudo certbot --nginx -d hr.curalink.pro     # adds the HTTPS block for you
 #
-# Replace hr.yourdomain.com with your domain/subdomain and 3001 with the port
+# Replace hr.curalink.pro with your domain/subdomain and 3001 with the port
 # you set in ecosystem.config.js.
 
 server {
     listen 80;
     listen [::]:80;
-    server_name hr.yourdomain.com;
+    server_name hr.curalink.pro;
 
     # Allow larger Excel uploads (bulk employee / attendance import)
     client_max_body_size 25M;
