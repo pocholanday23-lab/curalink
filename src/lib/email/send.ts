@@ -26,9 +26,14 @@ export function emailFrom(): string {
   return process.env.EMAIL_FROM?.trim() || user || "no-reply@localhost";
 }
 
-/** Best-effort base URL for login links in emails. */
+/**
+ * Base URL for login links in emails. Prefers APP_URL so the public-facing
+ * address in emails can be set independently of Auth.js's AUTH_URL (e.g. while
+ * a domain switch is mid-flight).
+ */
 export function appUrl(): string {
   return (
+    process.env.APP_URL?.trim() ||
     process.env.AUTH_URL?.trim() ||
     process.env.NEXTAUTH_URL?.trim() ||
     "http://localhost:3000"
