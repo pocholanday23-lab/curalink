@@ -4,6 +4,7 @@ import { computePayslipsForPeriod } from "@/lib/payslip";
 import { Button, Card, Field, PageHeader, Select } from "@/components/ui";
 import { PrintButton } from "@/components/print-button";
 import { PayslipDocument } from "@/components/payslip-document";
+import { SendPayslipReadyButton } from "@/components/send-payslip-ready-button";
 import { formatDateRange } from "@/lib/format";
 
 export default async function ReportsPayslipsPage({
@@ -25,7 +26,7 @@ export default async function ReportsPayslipsPage({
   const employees = await prisma.user.findMany({
     where: { active: true, role: { in: ["EMPLOYEE", "MANAGER"] } },
     orderBy: { name: "asc" },
-    select: { id: true, name: true },
+    select: { id: true, name: true, email: true },
   });
 
   const filters = (
@@ -93,6 +94,11 @@ export default async function ReportsPayslipsPage({
     ? batch.payslips.filter((p) => p.employeeId === sp.employeeId)
     : batch.payslips;
 
+  const payslipEmployeeIds = new Set(batch.payslips.map((p) => p.employeeId));
+  const notifyCount = employees.filter(
+    (e) => e.email.includes("@") && payslipEmployeeIds.has(e.id)
+  ).length;
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -103,6 +109,19 @@ export default async function ReportsPayslipsPage({
         actions={<PrintButton />}
       />
       <Card className="print:hidden">{filters}</Card>
+
+      <Card className="flex flex-col gap-3 print:hidden">
+        <span className="text-sm font-medium">Notify members</span>
+        <p className="text-xs opacity-70">
+          Emails every active member with a payslip in {batch.periodLabel} that
+          it is now available on the portal.
+        </p>
+        <SendPayslipReadyButton
+          payPeriodId={selected.id}
+          periodLabel={batch.periodLabel}
+          count={notifyCount}
+        />
+      </Card>
 
       <div className="flex flex-col gap-8">
         {shown.map((p) => (

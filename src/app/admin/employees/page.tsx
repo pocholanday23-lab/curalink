@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge, Button, Card, PageHeader } from "@/components/ui";
 import { DirectoryTable, type DirectoryRow } from "@/components/directory-table";
 import { EmployeeUploadForm } from "@/components/employee-upload-form";
+import { SendInvitesButton } from "@/components/send-invites-button";
 
 export default async function AdminEmployeesPage({
   searchParams,
@@ -40,6 +41,13 @@ export default async function AdminEmployeesPage({
   const showImport = sp.created != null || sp.updated != null;
   const warningCount = Number(sp.warnings ?? 0);
 
+  const inviteCount = employees.filter(
+    (e) =>
+      e.active &&
+      (e.role === "EMPLOYEE" || e.role === "MANAGER") &&
+      e.email.includes("@")
+  ).length;
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -55,6 +63,17 @@ export default async function AdminEmployeesPage({
       <Card className="flex flex-col gap-4">
         <span className="text-sm font-medium">Bulk upload from Excel</span>
         <EmployeeUploadForm managers={managers} />
+      </Card>
+
+      <Card className="flex flex-col gap-3">
+        <span className="text-sm font-medium">Account invites</span>
+        <p className="text-xs opacity-70">
+          Emails every active employee and manager that an account exists for
+          them and invites them to sign in. People who have not logged in yet
+          get their username and default password; everyone else gets their
+          username only.
+        </p>
+        <SendInvitesButton count={inviteCount} />
       </Card>
 
       {showImport && (
