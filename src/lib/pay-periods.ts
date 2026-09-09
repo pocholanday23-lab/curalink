@@ -92,7 +92,7 @@ export function generateUpcomingPeriods(
   after?: Date
 ): PeriodBounds[] {
   const results: PeriodBounds[] = [];
-  const payDelayDays = config.params?.payDelayDays ?? 5;
+  const payDelayDays = config.params?.payDelayDays ?? 10;
 
   for (const period of iteratePeriods(
     config.type,

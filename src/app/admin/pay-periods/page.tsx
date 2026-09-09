@@ -33,7 +33,7 @@ export default async function AdminPayPeriodsPage() {
               ? {
                   type: config.type,
                   anchorDate: config.anchorDate,
-                  payDelayDays: params?.payDelayDays ?? 5,
+                  payDelayDays: params?.payDelayDays ?? 10,
                   periodLengthDays: params?.periodLengthDays ?? 30,
                 }
               : undefined

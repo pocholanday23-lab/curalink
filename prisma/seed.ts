@@ -411,7 +411,7 @@ async function main() {
       id: "seed-cutoff-config",
       type: "SEMI_MONTHLY",
       anchorDate: new Date(),
-      params: { payDelayDays: 5, periodLengthDays: 30 },
+      params: { payDelayDays: 10, periodLengthDays: 30 },
     },
   });
 

@@ -78,7 +78,7 @@ export function CutoffConfigForm({
           name="payDelayDays"
           type="number"
           min="0"
-          defaultValue={defaultValues?.payDelayDays ?? 5}
+          defaultValue={defaultValues?.payDelayDays ?? 10}
         />
       </Field>
       <Button type="submit" disabled={pending} className="mt-2">

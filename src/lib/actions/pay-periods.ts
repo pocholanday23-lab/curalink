@@ -16,7 +16,7 @@ export async function saveCutoffConfigAction(
 
   const type = formData.get("type") as CutoffType;
   const anchorDateRaw = formData.get("anchorDate") as string;
-  const payDelayDays = Number(formData.get("payDelayDays") ?? 5);
+  const payDelayDays = Number(formData.get("payDelayDays") ?? 10);
   const periodLengthDays = Number(formData.get("periodLengthDays") ?? 30);
 
   if (!anchorDateRaw) {
