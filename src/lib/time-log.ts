@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { periodDateFilter } from "@/lib/pay-periods";
+import { punchPeriodFilter } from "@/lib/pay-periods";
 import { hoursBetween } from "@/lib/format";
 
 export type TimeLogEntry = {
@@ -45,7 +45,7 @@ export async function computeTimeLog(
       ? []
       : await prisma.timeEntry.findMany({
           where: {
-            clockIn: periodDateFilter(period),
+            clockIn: punchPeriodFilter(period),
             ...(opts.employeeIds
               ? { employeeId: { in: opts.employeeIds } }
               : {}),

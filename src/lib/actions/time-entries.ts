@@ -39,6 +39,8 @@ export async function clockInAction(
     return { error: "Invalid assignment." };
   }
 
+  // Stored as a universal instant; rendered in Philippine time everywhere
+  // (see APP_TIME_ZONE in src/lib/format.ts).
   await prisma.timeEntry.create({
     data: {
       employeeId: user.id,

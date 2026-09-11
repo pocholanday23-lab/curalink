@@ -117,3 +117,24 @@ export function periodDateFilter(period: { startDate: Date; endDate: Date }) {
     lt: addDays(atUTCMidnight(period.endDate), 1),
   };
 }
+
+/** Philippine Standard Time is UTC+8 with no daylight saving. */
+const PHT_OFFSET_MS = 8 * 60 * 60 * 1000;
+
+/**
+ * Instant filter for clock in / out punches belonging to a pay period.
+ *
+ * Period bounds are stored at UTC midnight but mean *Manila* calendar days, so
+ * the window runs from 00:00 Manila on startDate to 24:00 Manila on endDate —
+ * i.e. the UTC-midnight window shifted 8 hours earlier. Using the raw UTC
+ * bounds would misfile punches made late in the Manila evening (which are the
+ * next UTC day).
+ */
+export function punchPeriodFilter(period: { startDate: Date; endDate: Date }) {
+  return {
+    gte: new Date(atUTCMidnight(period.startDate).getTime() - PHT_OFFSET_MS),
+    lt: new Date(
+      addDays(atUTCMidnight(period.endDate), 1).getTime() - PHT_OFFSET_MS
+    ),
+  };
+}

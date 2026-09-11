@@ -1,3 +1,11 @@
+/**
+ * The company operates in the Philippines. Every timestamp is stored as a
+ * universal instant (UTC) and rendered here in Philippine Standard Time
+ * (UTC+8, no DST) so it reads the same no matter where the server or the
+ * viewer's browser is.
+ */
+export const APP_TIME_ZONE = "Asia/Manila";
+
 export function hoursBetween(start: Date, end: Date): number {
   return Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60 * 60));
 }
@@ -19,6 +27,7 @@ export function formatDate(date: Date | string): string {
     year: "numeric",
     month: "short",
     day: "numeric",
+    timeZone: APP_TIME_ZONE,
   }).format(new Date(date));
 }
 
@@ -29,6 +38,15 @@ export function formatDateTime(date: Date | string): string {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZone: APP_TIME_ZONE,
+  }).format(new Date(date));
+}
+
+export function formatTime(date: Date | string): string {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: APP_TIME_ZONE,
   }).format(new Date(date));
 }
 
