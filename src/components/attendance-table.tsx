@@ -25,12 +25,16 @@ export function AttendanceTable({
   employees,
   dates,
   initialStatuses,
+  derivedCells,
 }: {
   employees: { id: string; name: string }[];
   dates: string[];
   initialStatuses: StatusMap;
+  /** Cells whose status was auto-detected from clock in/out, not entered by a person. */
+  derivedCells?: Record<string, Record<string, boolean>>;
 }) {
   const [statuses, setStatuses] = useState<StatusMap>(initialStatuses);
+  const [derived, setDerived] = useState(derivedCells ?? {});
   const [pendingCells, setPendingCells] = useState<Set<string>>(new Set());
   const [, startTransition] = useTransition();
 
@@ -42,6 +46,11 @@ export function AttendanceTable({
     setStatuses((prev) => ({
       ...prev,
       [employeeId]: { ...prev[employeeId], [dateISO]: nextStatus ?? undefined },
+    }));
+    // A manual edit always overrides the auto-detected value going forward.
+    setDerived((prev) => ({
+      ...prev,
+      [employeeId]: { ...prev[employeeId], [dateISO]: false },
     }));
     setPendingCells((prev) => new Set(prev).add(cellKey));
 
@@ -77,9 +86,20 @@ export function AttendanceTable({
     );
   }
 
+  const hasDerived = Object.values(derived).some((byDate) =>
+    Object.values(byDate ?? {}).some(Boolean)
+  );
+
   return (
-    <Table>
-      <thead>
+    <>
+      {hasDerived && (
+        <p className="flex items-center gap-2 border-b border-black/10 px-4 py-2 text-xs text-black/50 dark:border-white/10 dark:text-white/50">
+          <span className="inline-block h-3 w-3 rounded-sm border border-dashed border-black/30 bg-black/5 dark:border-white/30 dark:bg-white/10" />
+          Dashed = auto-detected from clock in/out. Pick a value to override.
+        </p>
+      )}
+      <Table>
+        <thead>
         <tr>
           <Th>Employee</Th>
           {dates.map((iso) => (
@@ -113,13 +133,23 @@ export function AttendanceTable({
               {dates.map((iso) => {
                 const value = employeeStatuses[iso] ?? "";
                 const cellKey = `${employee.id}:${iso}`;
+                const isDerived = Boolean(derived[employee.id]?.[iso]);
                 return (
                   <Td key={iso}>
                     <select
                       value={value}
                       disabled={pendingCells.has(cellKey)}
                       onChange={(e) => handleChange(employee.id, iso, e.target.value)}
-                      className={`rounded border border-black/15 bg-white px-1.5 py-1 text-xs outline-none disabled:opacity-50 dark:border-white/20 dark:bg-black/20 ${
+                      title={
+                        isDerived
+                          ? "Auto-detected from clock in/out — pick a value to override"
+                          : undefined
+                      }
+                      className={`rounded border px-1.5 py-1 text-xs outline-none disabled:opacity-50 ${
+                        isDerived
+                          ? "border-dashed border-black/30 bg-black/5 dark:border-white/30 dark:bg-white/10"
+                          : "border-black/15 bg-white dark:border-white/20 dark:bg-black/20"
+                      } ${
                         value === "ABSENT" ? "font-medium text-red-600 dark:text-red-400" : ""
                       }`}
                     >
@@ -138,6 +168,7 @@ export function AttendanceTable({
           );
         })}
       </tbody>
-    </Table>
+      </Table>
+    </>
   );
 }

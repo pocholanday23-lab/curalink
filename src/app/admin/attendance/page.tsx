@@ -4,6 +4,7 @@ import { Badge, Button, Card, Field, Input, PageHeader } from "@/components/ui";
 import { AttendanceUploadForm } from "@/components/attendance-upload-form";
 import { AttendanceTable } from "@/components/attendance-table";
 import { enumerateDates, toISODate } from "@/lib/attendance";
+import { getAttendanceStatuses } from "@/lib/attendance-derive";
 import type { AttendanceStatus } from "@/generated/prisma/client";
 
 function defaultRange() {
@@ -31,23 +32,24 @@ export default async function AdminAttendancePage({
   const start = sp.start ?? fallback.start;
   const end = sp.end ?? fallback.end;
 
-  const [employees, records] = await Promise.all([
-    prisma.user.findMany({
-      where: { role: { in: ["EMPLOYEE", "MANAGER"] } },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-    prisma.attendanceRecord.findMany({
-      where: { date: { gte: new Date(start), lte: new Date(end) } },
-      select: { employeeId: true, date: true, status: true },
-    }),
-  ]);
+  const employees = await prisma.user.findMany({
+    where: { role: { in: ["EMPLOYEE", "MANAGER"] } },
+    orderBy: { name: "asc" },
+    select: { id: true, name: true },
+  });
 
   const dates = enumerateDates(new Date(start), new Date(end)).map(toISODate);
+  const statuses = await getAttendanceStatuses(
+    { startDate: new Date(start), endDate: new Date(end) },
+    employees.map((e) => e.id)
+  );
   const initialStatuses: Record<string, Record<string, AttendanceStatus>> = {};
-  for (const r of records) {
-    const iso = toISODate(r.date);
-    (initialStatuses[r.employeeId] ??= {})[iso] = r.status;
+  const derivedCells: Record<string, Record<string, boolean>> = {};
+  for (const [employeeId, byDate] of statuses) {
+    for (const [iso, { status, derived }] of byDate) {
+      (initialStatuses[employeeId] ??= {})[iso] = status;
+      if (derived) (derivedCells[employeeId] ??= {})[iso] = true;
+    }
   }
 
   const imported = sp.imported ? Number(sp.imported) : null;
@@ -98,6 +100,7 @@ export default async function AdminAttendancePage({
           employees={employees}
           dates={dates}
           initialStatuses={initialStatuses}
+          derivedCells={derivedCells}
         />
       </Card>
     </div>

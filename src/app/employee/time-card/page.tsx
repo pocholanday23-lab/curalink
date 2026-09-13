@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { Badge, Card, PageHeader, Table, Td, Th } from "@/components/ui";
 import { PeriodSelect } from "@/components/period-select";
 import { PrintButton } from "@/components/print-button";
-import { periodDateFilter } from "@/lib/pay-periods";
+import { getAttendanceStatuses, type DerivedStatus } from "@/lib/attendance-derive";
 import { enumerateDates, isWeekend, toISODate } from "@/lib/attendance";
 import { formatDate, formatDateRange } from "@/lib/format";
 import { computeTimeLog } from "@/lib/time-log";
@@ -55,17 +55,12 @@ export default async function TimeCardPage({
     );
   }
 
-  const records = await prisma.attendanceRecord.findMany({
-    where: { employeeId: user.id, date: periodDateFilter(selected) },
-    select: { date: true, status: true },
-  });
-  const byDate = new Map<string, AttendanceStatus>(
-    records.map((r) => [toISODate(r.date), r.status])
-  );
+  const statuses = await getAttendanceStatuses(selected, [user.id]);
+  const byDate = statuses.get(user.id) ?? new Map<string, DerivedStatus>();
 
   const days = enumerateDates(selected.startDate, selected.endDate).map((d) => {
     const iso = toISODate(d);
-    return { iso, status: byDate.get(iso) ?? null };
+    return { iso, status: byDate.get(iso)?.status ?? null };
   });
 
   const count = (s: AttendanceStatus) =>

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { periodDateFilter } from "@/lib/pay-periods";
+import { tallyAttendance } from "@/lib/attendance-derive";
 import { workingDaysInMonthOf } from "@/lib/working-days";
 import { getCompanySettings, type CompanySettings } from "@/lib/company";
 import { PayPeriodNotClosedError } from "@/lib/payroll";
@@ -58,7 +58,7 @@ export async function computePayslipsForPeriod(
     throw new PayPeriodNotClosedError();
   }
 
-  const [company, people, records] = await Promise.all([
+  const [company, people] = await Promise.all([
     getCompanySettings(),
     prisma.user.findMany({
       where: { active: true, role: { in: ["EMPLOYEE", "MANAGER"] } },
@@ -69,21 +69,17 @@ export async function computePayslipsForPeriod(
       },
       orderBy: { name: "asc" },
     }),
-    prisma.attendanceRecord.findMany({
-      where: { date: periodDateFilter(period) },
-      select: { employeeId: true, status: true },
-    }),
   ]);
 
   const workingDaysMonth = workingDaysInMonthOf(period.startDate);
 
-  const tally = new Map<string, { present: number; absent: number }>();
-  for (const r of records) {
-    const t = tally.get(r.employeeId) ?? { present: 0, absent: 0 };
-    if (r.status === "PRESENT") t.present += 1;
-    else if (r.status === "ABSENT") t.absent += 1;
-    tally.set(r.employeeId, t);
-  }
+  // Present/absent per employee: an explicit AttendanceRecord (Excel import
+  // or a manual edit) wins; otherwise a clock in/out punch that day counts as
+  // present, and a past weekday with neither counts as absent.
+  const tally = await tallyAttendance(
+    period,
+    people.map((p) => p.id)
+  );
 
   const payslips: Payslip[] = people.map((p) => {
     const t = tally.get(p.id) ?? { present: 0, absent: 0 };
