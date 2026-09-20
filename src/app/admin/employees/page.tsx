@@ -3,11 +3,9 @@ import { requireUser } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 import { Badge, Button, Card, PageHeader } from "@/components/ui";
 import { DirectoryTable, type DirectoryRow } from "@/components/directory-table";
-import { EmployeeUploadForm } from "@/components/employee-upload-form";
-import {
-  DirectoryStatusFilter,
-  parseStatusFilter,
-} from "@/components/directory-status-filter";
+import { BulkUploadDialog } from "@/components/bulk-upload-dialog";
+import { DirectoryStatusFilter } from "@/components/directory-status-filter";
+import { parseStatusFilter } from "@/lib/status-filter";
 
 export default async function AdminEmployeesPage({
   searchParams,
@@ -54,16 +52,14 @@ export default async function AdminEmployeesPage({
         title="Employees"
         description="Directory of all employee, manager, and admin records."
         actions={
-          <Link href="/admin/employees/new">
-            <Button>New employee</Button>
-          </Link>
+          <>
+            <BulkUploadDialog managers={managers} />
+            <Link href="/admin/employees/new">
+              <Button>New employee</Button>
+            </Link>
+          </>
         }
       />
-
-      <Card className="flex flex-col gap-4">
-        <span className="text-sm font-medium">Bulk upload from Excel</span>
-        <EmployeeUploadForm managers={managers} />
-      </Card>
 
       {showImport && (
         <Card className="flex flex-wrap items-center gap-2 text-sm">

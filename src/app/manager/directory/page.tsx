@@ -3,11 +3,9 @@ import { requireUser } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
 import { Badge, Button, Card, PageHeader } from "@/components/ui";
 import { DirectoryTable, type DirectoryRow } from "@/components/directory-table";
-import { EmployeeUploadForm } from "@/components/employee-upload-form";
-import {
-  DirectoryStatusFilter,
-  parseStatusFilter,
-} from "@/components/directory-status-filter";
+import { BulkUploadDialog } from "@/components/bulk-upload-dialog";
+import { DirectoryStatusFilter } from "@/components/directory-status-filter";
+import { parseStatusFilter } from "@/lib/status-filter";
 
 export default async function ManagerDirectoryPage({
   searchParams,
@@ -49,16 +47,14 @@ export default async function ManagerDirectoryPage({
         title="Directory"
         description="The people who report to you and the details on file for them."
         actions={
-          <Link href="/manager/directory/new">
-            <Button>New employee</Button>
-          </Link>
+          <>
+            <BulkUploadDialog />
+            <Link href="/manager/directory/new">
+              <Button>New employee</Button>
+            </Link>
+          </>
         }
       />
-
-      <Card className="flex flex-col gap-4">
-        <span className="text-sm font-medium">Bulk upload from Excel</span>
-        <EmployeeUploadForm />
-      </Card>
 
       {showImport && (
         <Card className="flex flex-wrap items-center gap-2 text-sm">
