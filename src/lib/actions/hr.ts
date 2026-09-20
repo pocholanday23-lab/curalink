@@ -8,14 +8,17 @@ import { prisma } from "@/lib/prisma";
 import { generateUsername, nextUsername, usernameBase } from "@/lib/username";
 import { parseEmployeeWorkbook } from "@/lib/hr-import";
 import {
+  DEFAULT_PASSWORD,
+  sendAccountInvites,
+  type NewAccount,
+} from "@/lib/email/invite";
+import {
   parseBankType,
   parseDateLoose,
   parseMaritalStatus,
   parseMoney,
 } from "@/lib/hr";
 import type { BankAccountType, MaritalStatus, Role } from "@/generated/prisma/client";
-
-const DEFAULT_PASSWORD = "password123";
 
 export type HrActionState = { error?: string } | undefined;
 
@@ -237,6 +240,9 @@ export async function createEmployeeWithProfileAction(
 
   await saveProfile(created.id, scalars, dependents);
 
+  // Fire-and-forget: tell them their username and default password.
+  void sendAccountInvites([created], actor.id);
+
   revalidateDirectories();
   redirect(directoryPath(actor.role));
 }
@@ -361,6 +367,7 @@ export async function uploadEmployeesAction(
 
   let created = 0;
   let updated = 0;
+  const newAccounts: NewAccount[] = [];
 
   for (const row of parsed.rows) {
     if (!row.firstName || !row.lastName) continue;
@@ -438,10 +445,14 @@ export async function uploadEmployeesAction(
         },
       });
       created += 1;
+      newAccounts.push(user);
     }
 
     await saveProfile(user.id, scalars, row.dependents);
   }
+
+  // Fire-and-forget: invite everyone who was newly created by this upload.
+  void sendAccountInvites(newAccounts, actor.id);
 
   revalidateDirectories();
 
