@@ -5,11 +5,16 @@ import { Badge, Button, Card, PageHeader } from "@/components/ui";
 import { DirectoryTable, type DirectoryRow } from "@/components/directory-table";
 import { EmployeeUploadForm } from "@/components/employee-upload-form";
 import { SendInvitesButton } from "@/components/send-invites-button";
+import {
+  DirectoryStatusFilter,
+  parseStatusFilter,
+} from "@/components/directory-status-filter";
 
 export default async function AdminEmployeesPage({
   searchParams,
 }: {
   searchParams: Promise<{
+    status?: string;
     created?: string;
     updated?: string;
     warnings?: string;
@@ -23,14 +28,19 @@ export default async function AdminEmployeesPage({
     orderBy: { name: "asc" },
   });
 
-  const rows: DirectoryRow[] = employees.map((e) => ({
-    id: e.id,
-    name: e.name,
-    username: e.username,
-    role: e.role,
-    active: e.active,
-    managerName: e.manager?.name ?? null,
-  }));
+  const status = parseStatusFilter(sp.status);
+  const rows: DirectoryRow[] = employees
+    .filter((e) =>
+      status === "all" ? true : status === "active" ? e.active : !e.active
+    )
+    .map((e) => ({
+      id: e.id,
+      name: e.name,
+      username: e.username,
+      role: e.role,
+      active: e.active,
+      managerName: e.manager?.name ?? null,
+    }));
 
   const managers = employees
     .filter((e) => e.role === "MANAGER" && e.active)
@@ -88,6 +98,7 @@ export default async function AdminEmployeesPage({
       )}
 
       <Card className="p-0">
+        <DirectoryStatusFilter value={status} />
         <DirectoryTable
           rows={rows}
           basePath="/admin/employees"

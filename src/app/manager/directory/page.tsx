@@ -4,11 +4,16 @@ import { prisma } from "@/lib/prisma";
 import { Badge, Button, Card, PageHeader } from "@/components/ui";
 import { DirectoryTable, type DirectoryRow } from "@/components/directory-table";
 import { EmployeeUploadForm } from "@/components/employee-upload-form";
+import {
+  DirectoryStatusFilter,
+  parseStatusFilter,
+} from "@/components/directory-status-filter";
 
 export default async function ManagerDirectoryPage({
   searchParams,
 }: {
   searchParams: Promise<{
+    status?: string;
     created?: string;
     updated?: string;
     warnings?: string;
@@ -17,8 +22,12 @@ export default async function ManagerDirectoryPage({
   const manager = await requireUser("MANAGER");
   const sp = await searchParams;
 
+  const status = parseStatusFilter(sp.status);
   const reports = await prisma.user.findMany({
-    where: { managerId: manager.id },
+    where: {
+      managerId: manager.id,
+      ...(status === "all" ? {} : { active: status === "active" }),
+    },
     orderBy: { name: "asc" },
   });
 
@@ -64,6 +73,7 @@ export default async function ManagerDirectoryPage({
       )}
 
       <Card className="p-0">
+        <DirectoryStatusFilter value={status} />
         <DirectoryTable rows={rows} basePath="/manager/directory" />
       </Card>
     </div>
