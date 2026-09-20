@@ -19,11 +19,6 @@ export default async function ManagerDirectoryPage({
 
   const reports = await prisma.user.findMany({
     where: { managerId: manager.id },
-    include: {
-      profile: {
-        select: { contactNumber: true, salaryPhp: true },
-      },
-    },
     orderBy: { name: "asc" },
   });
 
@@ -34,8 +29,6 @@ export default async function ManagerDirectoryPage({
     role: e.role,
     active: e.active,
     managerName: manager.name ?? null,
-    contactNumber: e.profile?.contactNumber ?? null,
-    salaryPhp: e.profile?.salaryPhp?.toString() ?? null,
   }));
 
   const showImport = sp.created != null || sp.updated != null;
@@ -71,11 +64,7 @@ export default async function ManagerDirectoryPage({
       )}
 
       <Card className="p-0">
-        <DirectoryTable
-          rows={rows}
-          basePath="/manager/directory"
-          showPay
-        />
+        <DirectoryTable rows={rows} basePath="/manager/directory" />
       </Card>
     </div>
   );

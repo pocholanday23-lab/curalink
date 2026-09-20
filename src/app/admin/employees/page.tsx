@@ -19,7 +19,7 @@ export default async function AdminEmployeesPage({
   const sp = await searchParams;
 
   const employees = await prisma.user.findMany({
-    include: { manager: true, profile: { select: { contactNumber: true, salaryPhp: true } } },
+    include: { manager: true },
     orderBy: { name: "asc" },
   });
 
@@ -30,8 +30,6 @@ export default async function AdminEmployeesPage({
     role: e.role,
     active: e.active,
     managerName: e.manager?.name ?? null,
-    contactNumber: e.profile?.contactNumber ?? null,
-    salaryPhp: e.profile?.salaryPhp?.toString() ?? null,
   }));
 
   const managers = employees

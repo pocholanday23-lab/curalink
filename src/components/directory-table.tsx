@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Badge, Table, Td, Th } from "@/components/ui";
-import { formatMoneyPhp } from "@/lib/hr";
 import { ImpersonateButton } from "@/components/impersonate-button";
 
 export type DirectoryRow = {
@@ -10,22 +9,18 @@ export type DirectoryRow = {
   role: string;
   active: boolean;
   managerName: string | null;
-  contactNumber: string | null;
-  salaryPhp: string | number | null;
 };
 
 export function DirectoryTable({
   rows,
   basePath,
-  showPay = true,
   showImpersonate = false,
 }: {
   rows: DirectoryRow[];
   basePath: string;
-  showPay?: boolean;
   showImpersonate?: boolean;
 }) {
-  const cols = 7 + (showPay ? 1 : 0) + (showImpersonate ? 1 : 0);
+  const cols = 6 + (showImpersonate ? 1 : 0);
 
   return (
     <Table>
@@ -35,8 +30,6 @@ export function DirectoryTable({
           <Th>Username</Th>
           <Th>Role</Th>
           <Th>Manager</Th>
-          <Th>Contact</Th>
-          {showPay && <Th>Monthly salary</Th>}
           <Th>Status</Th>
           {showImpersonate && <Th>Access</Th>}
           <Th />
@@ -56,12 +49,6 @@ export function DirectoryTable({
             <Td>{r.username}</Td>
             <Td>{r.role}</Td>
             <Td>{r.managerName ?? "—"}</Td>
-            <Td>{r.contactNumber ?? "—"}</Td>
-            {showPay && (
-              <Td>
-                {r.salaryPhp != null ? formatMoneyPhp(r.salaryPhp) : "—"}
-              </Td>
-            )}
             <Td>
               <Badge tone={r.active ? "green" : "neutral"}>
                 {r.active ? "Active" : "Inactive"}
