@@ -6,6 +6,7 @@ import { DirectoryTable, type DirectoryRow } from "@/components/directory-table"
 import { BulkUploadDialog } from "@/components/bulk-upload-dialog";
 import { DirectoryStatusFilter } from "@/components/directory-status-filter";
 import { parseStatusFilter } from "@/lib/status-filter";
+import { PendingInvitesList } from "@/components/pending-invites-list";
 
 export default async function ManagerDirectoryPage({
   searchParams,
@@ -41,6 +42,15 @@ export default async function ManagerDirectoryPage({
   const showImport = sp.created != null || sp.updated != null;
   const warningCount = Number(sp.warnings ?? 0);
 
+  const pendingInvites = await prisma.onboardingInvite.findMany({
+    where: { completedAt: null, invitedById: manager.id },
+    orderBy: { createdAt: "desc" },
+    include: {
+      manager: { select: { name: true } },
+      invitedBy: { select: { name: true } },
+    },
+  });
+
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
@@ -65,6 +75,22 @@ export default async function ManagerDirectoryPage({
               {warningCount} warning{warningCount === 1 ? "" : "s"}
             </Badge>
           )}
+        </Card>
+      )}
+
+      {pendingInvites.length > 0 && (
+        <Card className="flex flex-col gap-3 p-0">
+          <span className="px-4 pt-4 text-sm font-medium">Pending sign-ups</span>
+          <PendingInvitesList
+            rows={pendingInvites.map((i) => ({
+              id: i.id,
+              email: i.email,
+              managerName: i.manager?.name ?? null,
+              invitedByName: i.invitedBy.name,
+              createdAt: i.createdAt,
+              expiresAt: i.expiresAt,
+            }))}
+          />
         </Card>
       )}
 

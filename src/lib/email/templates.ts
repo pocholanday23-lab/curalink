@@ -142,3 +142,43 @@ Sign in to view and download it: ${loginUrl}
 
   return { subject, text, html };
 }
+
+export function onboardingInviteEmail(opts: {
+  companyName: string;
+  formUrl: string;
+  managerName?: string | null;
+}): BuiltEmail {
+  const { companyName, formUrl, managerName } = opts;
+  const subject = `Welcome to ${companyName} — please complete your sign-up`;
+
+  const managerLine = managerName
+    ? `You'll be reporting to ${managerName}.`
+    : "";
+
+  const text = `Welcome to ${companyName}!
+
+To finish setting up your HR record, please fill out this short sign-up form:
+${formUrl}
+
+${managerLine}
+
+This link is personal to you and expires in 7 days. Once you submit it, we'll
+email you a username and password so you can sign in to the HR portal.
+
+- ${companyName} HR`;
+
+  const html = shell(
+    `<p style="margin:0 0 12px;">Welcome to ${esc(companyName)}!</p>
+     <p style="margin:0 0 12px;">To finish setting up your HR record, please fill out this short sign-up form.${
+       managerLine ? ` ${esc(managerLine)}` : ""
+     }</p>
+     ${button(formUrl, "Complete sign-up")}
+     <p style="margin:0 0 12px;color:#6b7280;font-size:13px;">Or paste this link into your browser:<br><a href="${esc(
+       formUrl
+     )}" style="color:#1f52ad;">${esc(formUrl)}</a></p>
+     <p style="margin:0;color:#6b7280;font-size:13px;">This link is personal to you and expires in 7 days. Once you submit it, we'll email you a username and password so you can sign in.</p>`,
+    companyName
+  );
+
+  return { subject, text, html };
+}

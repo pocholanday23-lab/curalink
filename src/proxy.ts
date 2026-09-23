@@ -20,8 +20,11 @@ export default auth((req) => {
   const mustChangePassword = req.auth?.user?.mustChangePassword;
   const isPublicRoute = pathname === "/login";
   const isChangePassword = pathname === "/change-password";
+  // Capability link: the token in the URL is the only credential, so this
+  // must work with no session at all, for anyone who has the link.
+  const isOnboardingRoute = pathname.startsWith("/onboard/");
 
-  if (!req.auth && !isPublicRoute) {
+  if (!req.auth && !isPublicRoute && !isOnboardingRoute) {
     const loginUrl = new URL("/login", req.nextUrl);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);

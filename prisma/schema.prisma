@@ -50,6 +50,7 @@ enum AttendanceStatus {
 enum EmailKind {
   ACCOUNT_INVITE
   PAYSLIP_READY
+  ONBOARDING_INVITE
 }
 
 model User {
@@ -75,6 +76,10 @@ model User {
   timeEntries       TimeEntry[]
   attendanceRecords AttendanceRecord[]
   emailsReceived    EmailLog[]
+
+  onboardingInvitesSent     OnboardingInvite[] @relation("OnboardingInviteSender")
+  onboardingInvitesAssigned OnboardingInvite[] @relation("OnboardingInviteManager")
+  onboardingInviteResult    OnboardingInvite?  @relation("OnboardingInviteResult")
 
   @@index([managerId])
 }
@@ -196,6 +201,33 @@ model EmailLog {
 
   @@index([kind])
   @@index([createdAt])
+}
+
+/**
+ * A capability link sent to a prospective employee's email so they can fill
+ * in their own HR record without an account. `token` is the secret in the
+ * URL — knowing it is the only "authentication". Consumed once: completing
+ * the form sets completedAt/completedUserId and the token stops working.
+ */
+model OnboardingInvite {
+  id          String   @id @default(cuid())
+  token       String   @unique
+  email       String
+
+  managerId String?
+  manager   User?   @relation("OnboardingInviteManager", fields: [managerId], references: [id])
+
+  invitedById String
+  invitedBy   User   @relation("OnboardingInviteSender", fields: [invitedById], references: [id])
+
+  completedAt     DateTime?
+  completedUserId String?   @unique
+  completedUser   User?     @relation("OnboardingInviteResult", fields: [completedUserId], references: [id])
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
 }
 
 model AttendanceRecord {

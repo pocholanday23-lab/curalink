@@ -83,6 +83,9 @@ export function ProfileForm({
   canEditPay = false,
   managers = [],
   defaultValues,
+  lockedEmail,
+  assignedManagerName,
+  submitLabel,
 }: {
   action: (
     state: HrActionState,
@@ -93,6 +96,11 @@ export function ProfileForm({
   canEditPay?: boolean;
   managers?: { id: string; name: string }[];
   defaultValues?: Partial<ProfileFormValues>;
+  /** Onboarding form: email comes from the invite and can't be changed here. */
+  lockedEmail?: string;
+  /** Onboarding form: show who they'll report to, read-only. */
+  assignedManagerName?: string | null;
+  submitLabel?: string;
 }) {
   const initial = { ...EMPTY, ...defaultValues };
   const [state, formAction, pending] = useActionState(action, undefined);
@@ -130,14 +138,27 @@ export function ProfileForm({
             />
           </Field>
         </div>
-        <Field label="Email" htmlFor="email">
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            defaultValue={initial.email}
-          />
-        </Field>
+        {lockedEmail ? (
+          <Field label="Email" htmlFor="email">
+            <Input id="email" name="email" type="email" value={lockedEmail} readOnly />
+          </Field>
+        ) : (
+          <Field label="Email" htmlFor="email">
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              defaultValue={initial.email}
+            />
+          </Field>
+        )}
+        {assignedManagerName !== undefined && (
+          <p className="text-xs opacity-70">
+            {assignedManagerName
+              ? `You'll be reporting to ${assignedManagerName}.`
+              : "No manager has been assigned yet — HR will set one up for you."}
+          </p>
+        )}
       </Fieldset>
 
       {canEditAccount && (
@@ -389,7 +410,7 @@ export function ProfileForm({
       </Fieldset>
 
       <Button type="submit" disabled={pending} className="self-start">
-        {pending ? "Saving..." : "Save"}
+        {pending ? "Saving..." : submitLabel ?? "Save"}
       </Button>
     </form>
   );
