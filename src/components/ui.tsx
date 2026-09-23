@@ -111,16 +111,25 @@ export function Label(props: LabelHTMLAttributes<HTMLLabelElement>) {
 const inputClass =
   "w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-black/40 disabled:opacity-50 dark:border-white/20 dark:bg-black/20 dark:text-white dark:focus:border-white/40";
 
-export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={inputClass} {...props} />;
+export function Input({
+  className,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) {
+  return <input className={cx(inputClass, className)} {...props} />;
 }
 
-export function Textarea(props: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={inputClass} {...props} />;
+export function Textarea({
+  className,
+  ...props
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return <textarea className={cx(inputClass, className)} {...props} />;
 }
 
-export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={inputClass} {...props} />;
+export function Select({
+  className,
+  ...props
+}: SelectHTMLAttributes<HTMLSelectElement>) {
+  return <select className={cx(inputClass, className)} {...props} />;
 }
 
 export function Table({ children }: { children: React.ReactNode }) {

@@ -61,6 +61,15 @@ const EMPTY: ProfileFormValues = {
   dependents: [],
 };
 
+/** Progressive (09XX)-XXXXXXX mask for an 11-digit PH mobile number. */
+function formatPhMobile(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 4) return digits.length ? `(${digits}` : "";
+  return `(${digits.slice(0, 4)})-${digits.slice(4)}`;
+}
+
+const PH_MOBILE_PATTERN = "\\(09\\d{2}\\)-\\d{7}";
+
 function Fieldset({
   legend,
   children,
@@ -86,6 +95,7 @@ export function ProfileForm({
   lockedEmail,
   assignedManagerName,
   submitLabel,
+  strict = false,
 }: {
   action: (
     state: HrActionState,
@@ -101,12 +111,24 @@ export function ProfileForm({
   /** Onboarding form: show who they'll report to, read-only. */
   assignedManagerName?: string | null;
   submitLabel?: string;
+  /**
+   * Onboarding form: every field is required except dependents; marital
+   * status of Single locks the spouse field to "N/A"; contact number is
+   * masked to (09XX)-XXXXXXX.
+   */
+  strict?: boolean;
 }) {
   const initial = { ...EMPTY, ...defaultValues };
   const [state, formAction, pending] = useActionState(action, undefined);
   const [dependents, setDependents] = useState<
     { name: string; birthDate: string }[]
   >(initial.dependents.length > 0 ? initial.dependents : []);
+  const [maritalStatus, setMaritalStatus] = useState(initial.maritalStatus);
+  const [spouseName, setSpouseName] = useState(initial.spouseName);
+  const [contactNumber, setContactNumber] = useState(
+    strict ? formatPhMobile(initial.contactNumber) : initial.contactNumber
+  );
+  const isSingle = maritalStatus === "SINGLE";
 
   return (
     <form action={formAction} className="flex flex-col gap-5">
@@ -126,6 +148,7 @@ export function ProfileForm({
             <Input
               id="middleName"
               name="middleName"
+              required={strict}
               defaultValue={initial.middleName}
             />
           </Field>
@@ -236,6 +259,7 @@ export function ProfileForm({
               id="birthDate"
               name="birthDate"
               type="date"
+              required={strict}
               defaultValue={initial.birthDate}
             />
           </Field>
@@ -243,9 +267,13 @@ export function ProfileForm({
             <Select
               id="maritalStatus"
               name="maritalStatus"
-              defaultValue={initial.maritalStatus}
+              required={strict}
+              value={maritalStatus}
+              onChange={(e) => setMaritalStatus(e.target.value)}
             >
-              <option value="">—</option>
+              <option value="" disabled={strict}>
+                —
+              </option>
               {MARITAL_STATUS_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
@@ -257,14 +285,33 @@ export function ProfileForm({
             <Input
               id="spouseName"
               name="spouseName"
-              defaultValue={initial.spouseName}
+              required={strict && !isSingle}
+              readOnly={isSingle}
+              value={isSingle ? "N/A" : spouseName}
+              onChange={(e) => setSpouseName(e.target.value)}
+              className={
+                isSingle
+                  ? "cursor-not-allowed bg-black/10 dark:bg-white/10"
+                  : undefined
+              }
             />
           </Field>
           <Field label="Contact number" htmlFor="contactNumber">
             <Input
               id="contactNumber"
               name="contactNumber"
-              defaultValue={initial.contactNumber}
+              required={strict}
+              inputMode="numeric"
+              placeholder={strict ? "(09XX)-XXXXXXX" : undefined}
+              pattern={strict ? PH_MOBILE_PATTERN : undefined}
+              title={strict ? "Format: (09XX)-XXXXXXX" : undefined}
+              value={strict ? contactNumber : undefined}
+              defaultValue={strict ? undefined : initial.contactNumber}
+              onChange={
+                strict
+                  ? (e) => setContactNumber(formatPhMobile(e.target.value))
+                  : undefined
+              }
             />
           </Field>
         </div>
@@ -273,6 +320,7 @@ export function ProfileForm({
             id="homeAddress"
             name="homeAddress"
             rows={2}
+            required={strict}
             defaultValue={initial.homeAddress}
           />
         </Field>
@@ -281,15 +329,26 @@ export function ProfileForm({
       <Fieldset legend="Government IDs">
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="SSS No." htmlFor="sssNo">
-            <Input id="sssNo" name="sssNo" defaultValue={initial.sssNo} />
+            <Input
+              id="sssNo"
+              name="sssNo"
+              required={strict}
+              defaultValue={initial.sssNo}
+            />
           </Field>
           <Field label="TIN No." htmlFor="tinNo">
-            <Input id="tinNo" name="tinNo" defaultValue={initial.tinNo} />
+            <Input
+              id="tinNo"
+              name="tinNo"
+              required={strict}
+              defaultValue={initial.tinNo}
+            />
           </Field>
           <Field label="Pag-IBIG No." htmlFor="pagibigNo">
             <Input
               id="pagibigNo"
               name="pagibigNo"
+              required={strict}
               defaultValue={initial.pagibigNo}
             />
           </Field>
@@ -299,12 +358,18 @@ export function ProfileForm({
       <Fieldset legend="Bank details">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Bank name" htmlFor="bankName">
-            <Input id="bankName" name="bankName" defaultValue={initial.bankName} />
+            <Input
+              id="bankName"
+              name="bankName"
+              required={strict}
+              defaultValue={initial.bankName}
+            />
           </Field>
           <Field label="Bank branch" htmlFor="bankBranch">
             <Input
               id="bankBranch"
               name="bankBranch"
+              required={strict}
               defaultValue={initial.bankBranch}
             />
           </Field>
@@ -312,6 +377,7 @@ export function ProfileForm({
             <Input
               id="bankAccountName"
               name="bankAccountName"
+              required={strict}
               defaultValue={initial.bankAccountName}
             />
           </Field>
@@ -319,6 +385,7 @@ export function ProfileForm({
             <Input
               id="bankAccountNumber"
               name="bankAccountNumber"
+              required={strict}
               defaultValue={initial.bankAccountNumber}
             />
           </Field>
@@ -326,9 +393,12 @@ export function ProfileForm({
             <Select
               id="bankType"
               name="bankType"
+              required={strict}
               defaultValue={initial.bankType}
             >
-              <option value="">—</option>
+              <option value="" disabled={strict}>
+                —
+              </option>
               {BANK_TYPE_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.label}
@@ -345,6 +415,7 @@ export function ProfileForm({
             <Input
               id="emergencyContactName"
               name="emergencyContactName"
+              required={strict}
               defaultValue={initial.emergencyContactName}
             />
           </Field>
@@ -352,13 +423,14 @@ export function ProfileForm({
             <Input
               id="emergencyContactNumber"
               name="emergencyContactNumber"
+              required={strict}
               defaultValue={initial.emergencyContactNumber}
             />
           </Field>
         </div>
       </Fieldset>
 
-      <Fieldset legend="Dependents">
+      <Fieldset legend="Dependents (optional)">
         {dependents.length === 0 && (
           <p className="text-sm text-black/50 dark:text-white/50">
             No dependents added.

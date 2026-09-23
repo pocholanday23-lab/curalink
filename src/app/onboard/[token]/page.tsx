@@ -120,6 +120,7 @@ export default async function OnboardingPage({
           lockedEmail={invite.email}
           assignedManagerName={invite.manager?.name ?? null}
           submitLabel="Submit"
+          strict
         />
       </Card>
     </Shell>
