@@ -1,5 +1,6 @@
 import { CuralinkLogo } from "@/components/curalink-logo";
 import type { ContractData } from "@/lib/contract";
+import { DEFAULT_SOW_TEXT } from "@/lib/contract-defaults";
 
 const SIGNATORY_NAME = "Peter Pocholo Olanday";
 const SIGNATORY_TITLE = "Director";
@@ -43,16 +44,15 @@ export function ContractDocument({ data }: { data: ContractData }) {
   const {
     companyName,
     companyAddress,
+    signatureUrl,
     contractorName,
     contractorAddress,
     endClientName,
     endClientAddress,
-    projectName,
     agreementDate,
     engagementStart,
     engagementEnd,
     serviceFeePhp,
-    serviceFeeUsd,
     sowNotes,
   } = data;
 
@@ -64,14 +64,11 @@ export function ContractDocument({ data }: { data: ContractData }) {
         engagementStart
       )}, continuing until earlier terminated under this Agreement`;
 
+  // PHP only — the contract never states a USD figure.
   const serviceFee =
     serviceFeePhp != null
-      ? `₱${money(serviceFeePhp)} per month${
-          serviceFeeUsd != null ? ` (equivalent to $${money(serviceFeeUsd)})` : ""
-        }, subject to the applicable Statement of Work`
-      : serviceFeeUsd != null
-        ? `$${money(serviceFeeUsd)} per month, subject to the applicable Statement of Work`
-        : "To be confirmed, subject to the applicable Statement of Work";
+      ? `₱${money(serviceFeePhp)} per month, subject to the applicable Statement of Work`
+      : "To be confirmed, subject to the applicable Statement of Work";
 
   return (
     <div className="mx-auto max-w-3xl bg-white p-6 text-sm leading-relaxed text-black sm:p-10 print:max-w-none print:p-0">
@@ -384,7 +381,16 @@ export function ContractDocument({ data }: { data: ContractData }) {
       <div className="mb-10 grid grid-cols-1 gap-10 sm:grid-cols-2">
         <div>
           <p className="mb-1 font-semibold">COMPANY:</p>
-          <div className="mt-10 border-t border-black/60 pt-1">
+          <div className="mt-6 flex h-14 items-end">
+            {signatureUrl && (
+              <img
+                src={signatureUrl}
+                alt={`${SIGNATORY_NAME}'s signature`}
+                className="h-14 w-auto object-contain"
+              />
+            )}
+          </div>
+          <div className="border-t border-black/60 pt-1">
             <p>{SIGNATORY_NAME}</p>
             <p>{SIGNATORY_TITLE}</p>
             <p>{companyName}</p>
@@ -392,38 +398,19 @@ export function ContractDocument({ data }: { data: ContractData }) {
         </div>
         <div>
           <p className="mb-1 font-semibold">INDEPENDENT CONTRACTOR:</p>
-          <div className="mt-10 border-t border-black/60 pt-1">
+          <div className="mt-6 h-14" />
+          <div className="border-t border-black/60 pt-1">
             <p>{contractorName}</p>
           </div>
         </div>
       </div>
 
-      <div className="break-before-page">
+      <div className="break-before-page whitespace-pre-line">
         <h2 className="mb-1 text-center text-xs font-semibold">Annex &ldquo;A&rdquo;</h2>
         <h1 className="mb-6 text-center text-lg font-bold uppercase">
           Statement of Work
         </h1>
-
-        <p className="mb-2 font-semibold">1. Services / Deliverables</p>
-        <p className="mb-4">
-          {sowNotes ||
-            `The Independent Contractor shall render services${
-              projectName ? ` for ${projectName}` : ""
-            }${
-              endClientName ? ` to the End Client (${endClientName})` : ""
-            }, as further defined and communicated by the Company.`}
-        </p>
-
-        <p className="mb-2 font-semibold">
-          2. Key Performance Indicators / Service Standards
-        </p>
-        <p>
-          The service standards above shall serve as agreed benchmarks for
-          the expected output, quality, and timely completion of the
-          Services, while preserving the Independent Contractor&rsquo;s
-          discretion as to the manner, method, and sequence of performing the
-          work.
-        </p>
+        {sowNotes || DEFAULT_SOW_TEXT}
       </div>
     </div>
   );

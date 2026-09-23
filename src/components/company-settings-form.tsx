@@ -57,6 +57,16 @@ export function CompanySettingsForm({
           defaultValue={defaultValues.logoUrl ?? ""}
         />
       </Field>
+      <Field
+        label="Signature image URL (optional — shown above the company signatory's name on contracts)"
+        htmlFor="signatureUrl"
+      >
+        <Input
+          id="signatureUrl"
+          name="signatureUrl"
+          defaultValue={defaultValues.signatureUrl ?? ""}
+        />
+      </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Bank name" htmlFor="bankName">

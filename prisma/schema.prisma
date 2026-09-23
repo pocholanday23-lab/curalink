@@ -266,6 +266,7 @@ model CompanySettings {
   invoiceAddress    String?
   payslipAddress    String?
   logoUrl           String?
+  signatureUrl      String?
   bankName          String?
   bankAccountName   String?
   bankAccountNumber String?

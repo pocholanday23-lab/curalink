@@ -33,7 +33,7 @@ export default async function AdminAttendancePage({
   const end = sp.end ?? fallback.end;
 
   const employees = await prisma.user.findMany({
-    where: { role: { in: ["EMPLOYEE", "MANAGER"] } },
+    where: { role: { in: ["EMPLOYEE", "MANAGER"] }, active: true },
     orderBy: { name: "asc" },
     select: { id: true, name: true },
   });

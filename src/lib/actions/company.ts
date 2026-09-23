@@ -36,6 +36,7 @@ export async function saveCompanySettingsAction(
     invoiceAddress: str(formData, "invoiceAddress"),
     payslipAddress: str(formData, "payslipAddress"),
     logoUrl: str(formData, "logoUrl"),
+    signatureUrl: str(formData, "signatureUrl"),
     bankName: str(formData, "bankName"),
     bankAccountName: str(formData, "bankAccountName"),
     bankAccountNumber: str(formData, "bankAccountNumber"),
@@ -54,5 +55,6 @@ export async function saveCompanySettingsAction(
   revalidatePath("/admin/settings");
   revalidatePath("/admin/reports/invoices");
   revalidatePath("/admin/reports/payslips");
+  revalidatePath("/onboard", "layout");
   return { saved: true };
 }

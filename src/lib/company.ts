@@ -8,6 +8,7 @@ export type CompanySettings = {
   invoiceAddress: string | null;
   payslipAddress: string | null;
   logoUrl: string | null;
+  signatureUrl: string | null;
   bankName: string | null;
   bankAccountName: string | null;
   bankAccountNumber: string | null;
@@ -23,6 +24,7 @@ const DEFAULTS: CompanySettings = {
   invoiceAddress: null,
   payslipAddress: null,
   logoUrl: null,
+  signatureUrl: null,
   bankName: null,
   bankAccountName: null,
   bankAccountNumber: null,
@@ -41,6 +43,7 @@ export async function getCompanySettings(): Promise<CompanySettings> {
     invoiceAddress: row.invoiceAddress,
     payslipAddress: row.payslipAddress,
     logoUrl: row.logoUrl,
+    signatureUrl: row.signatureUrl,
     bankName: row.bankName,
     bankAccountName: row.bankAccountName,
     bankAccountNumber: row.bankAccountNumber,

@@ -5,6 +5,7 @@ import { getCompanySettings } from "@/lib/company";
 export type ContractData = {
   companyName: string;
   companyAddress: string | null;
+  signatureUrl: string | null;
   contractorName: string;
   contractorAddress: string | null;
   endClientName: string | null;
@@ -13,8 +14,8 @@ export type ContractData = {
   agreementDate: Date;
   engagementStart: Date;
   engagementEnd: Date | null;
+  /** PHP only — the contract never states a USD figure. */
   serviceFeePhp: number | null;
-  serviceFeeUsd: number | null;
   sowNotes: string | null;
 };
 
@@ -49,6 +50,7 @@ export async function getContractData(
   return {
     companyName: company.name,
     companyAddress: company.payslipAddress,
+    signatureUrl: company.signatureUrl,
     contractorName: employee.name,
     contractorAddress: employee.profile?.homeAddress ?? null,
     endClientName: assignment?.client.name ?? null,
@@ -60,10 +62,6 @@ export async function getContractData(
     serviceFeePhp:
       employee.profile?.salaryPhp != null
         ? Number(employee.profile.salaryPhp)
-        : null,
-    serviceFeeUsd:
-      employee.profile?.salaryUsd != null
-        ? Number(employee.profile.salaryUsd)
         : null,
     sowNotes: invite.sowNotes,
   };
