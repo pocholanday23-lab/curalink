@@ -415,10 +415,8 @@ export async function confirmOnboardingAction(
   });
 
   if (employee) {
-    const company = await getCompanySettings();
     const contractUrl = `${appUrl()}/onboard/${invite.token}/contract`;
     const mail = onboardingContractEmail({
-      companyName: company.name,
       recipientName: employee.name,
       contractUrl,
       replyToEmail: process.env.SMTP_USER?.trim() || "HR",

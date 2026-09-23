@@ -226,41 +226,52 @@ Review it here: ${reviewUrl}
 }
 
 export function onboardingContractEmail(opts: {
-  companyName: string;
   recipientName: string;
   contractUrl: string;
   replyToEmail: string;
 }): BuiltEmail {
-  const { companyName, recipientName, contractUrl, replyToEmail } = opts;
+  const { recipientName, contractUrl, replyToEmail } = opts;
   const first = recipientName.split(" ")[0] || recipientName;
-  const subject = `Welcome to ${companyName} — please sign your contract`;
+  const subject = "Reminder: please sign your CuraLink contract";
 
   const text = `Hi ${first},
 
-Welcome to ${companyName}! Your sign-up has been reviewed and confirmed.
+Just following up on the CuraLink contract we sent previously.
 
-Please view and print your Independent Contractor Agreement here:
+Please take a moment to review and sign your contract using the link below:
+
 ${contractUrl}
 
-Review it, sign it, and reply to this email with a scanned or photographed
-copy of the signed contract as a PDF attachment (to ${replyToEmail}).
+Once signed, please reply to this email with a scanned or photographed copy of the signed contract in PDF format and send it to ${replyToEmail}.
 
-Once we receive your signed contract, we'll activate your account and send
-you your login details.
+Once we receive your signed contract, we'll proceed with activating your CuraLink account and sending your login details.
 
-- ${companyName} HR`;
+If you've already completed this step, please disregard this reminder.
+
+Thank you, ${first}, and we look forward to having you on board with CuraLink!
+
+Best regards,
+Poch Olanday
+CuraLink`;
 
   const html = shell(
     `<p style="margin:0 0 12px;">Hi ${esc(first)},</p>
-     <p style="margin:0 0 12px;">Welcome to ${esc(
-       companyName
-     )}! Your sign-up has been reviewed and confirmed.</p>
-     ${button(contractUrl, "View my contract")}
-     <p style="margin:0 0 12px;">Please review it, sign it, and <strong>reply to this email</strong> with a scanned or photographed copy of the signed contract as a PDF attachment (to ${esc(
+     <p style="margin:0 0 12px;">Just following up on the CuraLink contract we sent previously.</p>
+     <p style="margin:0 0 12px;">Please take a moment to review and sign your contract using the link below:</p>
+     ${button(contractUrl, "Review & sign contract")}
+     <p style="margin:0 0 12px;color:#6b7280;font-size:13px;">Or paste this link into your browser:<br><a href="${esc(
+       contractUrl
+     )}" style="color:#1f52ad;">${esc(contractUrl)}</a></p>
+     <p style="margin:0 0 12px;">Once signed, please reply to this email with a scanned or photographed copy of the signed contract in PDF format and send it to ${esc(
        replyToEmail
-     )}).</p>
-     <p style="margin:0;color:#6b7280;font-size:13px;">Once we receive your signed contract, we'll activate your account and send you your login details.</p>`,
-    companyName
+     )}.</p>
+     <p style="margin:0 0 12px;">Once we receive your signed contract, we&rsquo;ll proceed with activating your CuraLink account and sending your login details.</p>
+     <p style="margin:0 0 16px;color:#6b7280;font-size:13px;">If you&rsquo;ve already completed this step, please disregard this reminder.</p>
+     <p style="margin:0 0 16px;">Thank you, ${esc(
+       first
+     )}, and we look forward to having you on board with CuraLink!</p>
+     <p style="margin:0;">Best regards,<br><strong>Poch Olanday</strong><br>CuraLink</p>`,
+    "CuraLink"
   );
 
   return { subject, text, html };
