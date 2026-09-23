@@ -38,21 +38,12 @@ async function deliverInvite(invite: {
   managerId: string | null;
   invitedById: string;
 }) {
-  const [company, manager] = await Promise.all([
-    getCompanySettings(),
-    invite.managerId
-      ? prisma.user.findUnique({
-          where: { id: invite.managerId },
-          select: { name: true },
-        })
-      : Promise.resolve(null),
-  ]);
+  const company = await getCompanySettings();
 
   const formUrl = `${appUrl()}/onboard/${invite.token}`;
   const mail = onboardingInviteEmail({
     companyName: company.name,
     formUrl,
-    managerName: manager?.name ?? null,
   });
 
   let status = "SENT";
