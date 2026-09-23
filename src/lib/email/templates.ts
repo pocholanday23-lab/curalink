@@ -182,3 +182,83 @@ email you a username and password so you can sign in to the HR portal.
 
   return { subject, text, html };
 }
+
+export function onboardingSubmittedEmail(opts: {
+  companyName: string;
+  reviewerName: string;
+  employeeName: string;
+  employeeEmail: string;
+  reviewUrl: string;
+}): BuiltEmail {
+  const { companyName, reviewerName, employeeName, employeeEmail, reviewUrl } = opts;
+  const first = reviewerName.split(" ")[0] || reviewerName;
+  const subject = `New sign-up to review: ${employeeName}`;
+
+  const text = `Hi ${first},
+
+${employeeName} (${employeeEmail}) just completed their sign-up form on the
+${companyName} HR portal.
+
+Please review it, assign them to a client/project, and set their salary. Once
+you confirm, they'll be emailed a contract to sign.
+
+Review it here: ${reviewUrl}
+
+- ${companyName} HR`;
+
+  const html = shell(
+    `<p style="margin:0 0 12px;">Hi ${esc(first)},</p>
+     <p style="margin:0 0 12px;"><strong>${esc(employeeName)}</strong> (${esc(
+       employeeEmail
+     )}) just completed their sign-up form on the ${esc(companyName)} HR portal.</p>
+     <p style="margin:0 0 12px;">Please review it, assign them to a client/project, and set their salary. Once you confirm, they'll be emailed a contract to sign.</p>
+     ${button(reviewUrl, "Review sign-up")}
+     <p style="margin:0;color:#6b7280;font-size:13px;">Or paste this link into your browser:<br><a href="${esc(
+       reviewUrl
+     )}" style="color:#1f52ad;">${esc(reviewUrl)}</a></p>`,
+    companyName
+  );
+
+  return { subject, text, html };
+}
+
+export function onboardingContractEmail(opts: {
+  companyName: string;
+  recipientName: string;
+  contractUrl: string;
+  replyToEmail: string;
+}): BuiltEmail {
+  const { companyName, recipientName, contractUrl, replyToEmail } = opts;
+  const first = recipientName.split(" ")[0] || recipientName;
+  const subject = `Welcome to ${companyName} — please sign your contract`;
+
+  const text = `Hi ${first},
+
+Welcome to ${companyName}! Your sign-up has been reviewed and confirmed.
+
+Please view and print your Independent Contractor Agreement here:
+${contractUrl}
+
+Review it, sign it, and reply to this email with a scanned or photographed
+copy of the signed contract as a PDF attachment (to ${replyToEmail}).
+
+Once we receive your signed contract, we'll activate your account and send
+you your login details.
+
+- ${companyName} HR`;
+
+  const html = shell(
+    `<p style="margin:0 0 12px;">Hi ${esc(first)},</p>
+     <p style="margin:0 0 12px;">Welcome to ${esc(
+       companyName
+     )}! Your sign-up has been reviewed and confirmed.</p>
+     ${button(contractUrl, "View my contract")}
+     <p style="margin:0 0 12px;">Please review it, sign it, and <strong>reply to this email</strong> with a scanned or photographed copy of the signed contract as a PDF attachment (to ${esc(
+       replyToEmail
+     )}).</p>
+     <p style="margin:0;color:#6b7280;font-size:13px;">Once we receive your signed contract, we'll activate your account and send you your login details.</p>`,
+    companyName
+  );
+
+  return { subject, text, html };
+}

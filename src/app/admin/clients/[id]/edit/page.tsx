@@ -43,6 +43,7 @@ export default async function EditClientPage({
           action={updateClientAction.bind(null, id)}
           defaultValues={{
             name: client.name,
+            address: client.address,
             contactName: client.contactName,
             contactEmail: client.contactEmail,
             active: client.active,

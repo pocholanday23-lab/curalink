@@ -77,9 +77,11 @@ model User {
   attendanceRecords AttendanceRecord[]
   emailsReceived    EmailLog[]
 
-  onboardingInvitesSent     OnboardingInvite[] @relation("OnboardingInviteSender")
-  onboardingInvitesAssigned OnboardingInvite[] @relation("OnboardingInviteManager")
-  onboardingInviteResult    OnboardingInvite?  @relation("OnboardingInviteResult")
+  onboardingInvitesSent      OnboardingInvite[] @relation("OnboardingInviteSender")
+  onboardingInvitesAssigned  OnboardingInvite[] @relation("OnboardingInviteManager")
+  onboardingInviteResult     OnboardingInvite?  @relation("OnboardingInviteResult")
+  onboardingInvitesConfirmed OnboardingInvite[] @relation("OnboardingInviteConfirmedBy")
+  onboardingInvitesActivated OnboardingInvite[] @relation("OnboardingInviteActivatedBy")
 
   @@index([managerId])
 }
@@ -125,6 +127,7 @@ model Dependent {
 model Client {
   id           String   @id @default(cuid())
   name         String
+  address      String?
   contactName  String?
   contactEmail String?
   active       Boolean  @default(true)
@@ -223,6 +226,19 @@ model OnboardingInvite {
   completedAt     DateTime?
   completedUserId String?   @unique
   completedUser   User?     @relation("OnboardingInviteResult", fields: [completedUserId], references: [id])
+
+  // Admin/manager review: assigns the client + salary and sends the contract.
+  confirmedAt     DateTime?
+  confirmedById   String?
+  confirmedBy     User?     @relation("OnboardingInviteConfirmedBy", fields: [confirmedById], references: [id])
+  sowNotes        String?
+  engagementStart DateTime? @db.Date
+  engagementEnd   DateTime? @db.Date
+
+  // Final step: flips the account active and emails the login credentials.
+  activatedAt   DateTime?
+  activatedById String?
+  activatedBy   User?     @relation("OnboardingInviteActivatedBy", fields: [activatedById], references: [id])
 
   expiresAt DateTime
   createdAt DateTime @default(now())

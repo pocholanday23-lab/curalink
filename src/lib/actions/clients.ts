@@ -14,6 +14,7 @@ export async function createClientAction(
   await requireUser("ADMIN");
 
   const name = (formData.get("name") as string)?.trim();
+  const address = (formData.get("address") as string)?.trim() || null;
   const contactName = (formData.get("contactName") as string)?.trim() || null;
   const contactEmail =
     (formData.get("contactEmail") as string)?.trim() || null;
@@ -22,7 +23,9 @@ export async function createClientAction(
     return { error: "Client name is required." };
   }
 
-  await prisma.client.create({ data: { name, contactName, contactEmail } });
+  await prisma.client.create({
+    data: { name, address, contactName, contactEmail },
+  });
 
   revalidatePath("/admin/settings");
   revalidatePath("/admin/clients");
@@ -37,6 +40,7 @@ export async function updateClientAction(
   await requireUser("ADMIN");
 
   const name = (formData.get("name") as string)?.trim();
+  const address = (formData.get("address") as string)?.trim() || null;
   const contactName = (formData.get("contactName") as string)?.trim() || null;
   const contactEmail =
     (formData.get("contactEmail") as string)?.trim() || null;
@@ -48,7 +52,7 @@ export async function updateClientAction(
 
   await prisma.client.update({
     where: { id },
-    data: { name, contactName, contactEmail, active },
+    data: { name, address, contactName, contactEmail, active },
   });
 
   revalidatePath("/admin/settings");

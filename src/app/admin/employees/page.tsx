@@ -48,7 +48,7 @@ export default async function AdminEmployeesPage({
   const warningCount = Number(sp.warnings ?? 0);
 
   const pendingInvites = await prisma.onboardingInvite.findMany({
-    where: { completedAt: null },
+    where: { activatedAt: null },
     orderBy: { createdAt: "desc" },
     include: {
       manager: { select: { name: true } },
@@ -88,6 +88,7 @@ export default async function AdminEmployeesPage({
         <Card className="flex flex-col gap-3 p-0">
           <span className="px-4 pt-4 text-sm font-medium">Pending sign-ups</span>
           <PendingInvitesList
+            reviewBasePath="/admin/employees"
             rows={pendingInvites.map((i) => ({
               id: i.id,
               email: i.email,
@@ -95,6 +96,8 @@ export default async function AdminEmployeesPage({
               invitedByName: i.invitedBy.name,
               createdAt: i.createdAt,
               expiresAt: i.expiresAt,
+              completedAt: i.completedAt,
+              confirmedAt: i.confirmedAt,
             }))}
           />
         </Card>

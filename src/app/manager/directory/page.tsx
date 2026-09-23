@@ -43,7 +43,10 @@ export default async function ManagerDirectoryPage({
   const warningCount = Number(sp.warnings ?? 0);
 
   const pendingInvites = await prisma.onboardingInvite.findMany({
-    where: { completedAt: null, invitedById: manager.id },
+    where: {
+      activatedAt: null,
+      OR: [{ invitedById: manager.id }, { managerId: manager.id }],
+    },
     orderBy: { createdAt: "desc" },
     include: {
       manager: { select: { name: true } },
@@ -82,6 +85,7 @@ export default async function ManagerDirectoryPage({
         <Card className="flex flex-col gap-3 p-0">
           <span className="px-4 pt-4 text-sm font-medium">Pending sign-ups</span>
           <PendingInvitesList
+            reviewBasePath="/manager/directory"
             rows={pendingInvites.map((i) => ({
               id: i.id,
               email: i.email,
@@ -89,6 +93,8 @@ export default async function ManagerDirectoryPage({
               invitedByName: i.invitedBy.name,
               createdAt: i.createdAt,
               expiresAt: i.expiresAt,
+              completedAt: i.completedAt,
+              confirmedAt: i.confirmedAt,
             }))}
           />
         </Card>

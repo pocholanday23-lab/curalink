@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Badge, Button, Table, Td, Th } from "@/components/ui";
 import { formatDate } from "@/lib/format";
 import {
+  activateOnboardingInviteAction,
   cancelOnboardingInviteAction,
   resendOnboardingInviteAction,
 } from "@/lib/actions/onboarding-invites";
@@ -12,13 +14,21 @@ export type PendingInviteRow = {
   invitedByName: string;
   createdAt: Date;
   expiresAt: Date;
+  completedAt: Date | null;
+  confirmedAt: Date | null;
 };
 
 function isPast(date: Date): boolean {
   return date.getTime() < Date.now();
 }
 
-export function PendingInvitesList({ rows }: { rows: PendingInviteRow[] }) {
+export function PendingInvitesList({
+  rows,
+  reviewBasePath,
+}: {
+  rows: PendingInviteRow[];
+  reviewBasePath: "/admin/employees" | "/manager/directory";
+}) {
   if (rows.length === 0) return null;
 
   return (
@@ -28,38 +38,60 @@ export function PendingInvitesList({ rows }: { rows: PendingInviteRow[] }) {
           <Th>Email</Th>
           <Th>Manager</Th>
           <Th>Invited by</Th>
+          <Th>Status</Th>
           <Th>Sent</Th>
-          <Th>Expires</Th>
           <Th />
         </tr>
       </thead>
       <tbody>
         {rows.map((r) => {
-          const expired = isPast(r.expiresAt);
+          const expired = !r.completedAt && isPast(r.expiresAt);
           return (
             <tr key={r.id} className="border-t border-black/5 dark:border-white/5">
               <Td>{r.email}</Td>
               <Td>{r.managerName ?? "—"}</Td>
               <Td>{r.invitedByName}</Td>
+              <Td>
+                {!r.completedAt ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Badge>Invited, sent {formatDate(r.createdAt)}</Badge>
+                    {expired && <Badge tone="amber">Expired</Badge>}
+                  </span>
+                ) : !r.confirmedAt ? (
+                  <Badge tone="amber">Needs review</Badge>
+                ) : (
+                  <Badge tone="amber">Confirmed — awaiting activation</Badge>
+                )}
+              </Td>
               <Td>{formatDate(r.createdAt)}</Td>
               <Td>
-                <span className="inline-flex items-center gap-2">
-                  {formatDate(r.expiresAt)}
-                  {expired && <Badge tone="amber">Expired</Badge>}
-                </span>
-              </Td>
-              <Td>
-                <div className="flex gap-2">
-                  <form action={resendOnboardingInviteAction.bind(null, r.id)}>
-                    <Button type="submit" variant="secondary">
-                      Resend
-                    </Button>
-                  </form>
-                  <form action={cancelOnboardingInviteAction.bind(null, r.id)}>
-                    <Button type="submit" variant="secondary">
-                      Cancel
-                    </Button>
-                  </form>
+                <div className="flex flex-wrap gap-2">
+                  {!r.completedAt && (
+                    <>
+                      <form action={resendOnboardingInviteAction.bind(null, r.id)}>
+                        <Button type="submit" variant="secondary">
+                          Resend
+                        </Button>
+                      </form>
+                      <form action={cancelOnboardingInviteAction.bind(null, r.id)}>
+                        <Button type="submit" variant="secondary">
+                          Cancel
+                        </Button>
+                      </form>
+                    </>
+                  )}
+                  {r.completedAt && !r.confirmedAt && (
+                    <Link href={`${reviewBasePath}/onboarding/${r.id}`}>
+                      <Button type="button" variant="secondary">
+                        Review &amp; confirm
+                      </Button>
+                    </Link>
+                  )}
+                  {r.confirmedAt && (
+                    <form action={activateOnboardingInviteAction.bind(null, r.id)}>
+                      <Button type="submit">Activate</Button>
+                    </form>
+                  )}
                 </div>
               </Td>
             </tr>

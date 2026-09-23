@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Button, ErrorText, Field, Input } from "@/components/ui";
+import { Button, ErrorText, Field, Input, Textarea } from "@/components/ui";
 import type { ClientActionState } from "@/lib/actions/clients";
 
 export function ClientForm({
@@ -15,6 +15,7 @@ export function ClientForm({
   ) => Promise<ClientActionState>;
   defaultValues?: {
     name: string;
+    address: string | null;
     contactName: string | null;
     contactEmail: string | null;
     active: boolean;
@@ -32,6 +33,14 @@ export function ClientForm({
           name="name"
           required
           defaultValue={defaultValues?.name}
+        />
+      </Field>
+      <Field label="Address (used on contracts as the End Client address)" htmlFor="address">
+        <Textarea
+          id="address"
+          name="address"
+          rows={2}
+          defaultValue={defaultValues?.address ?? ""}
         />
       </Field>
       <Field label="Contact name" htmlFor="contactName">

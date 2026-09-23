@@ -49,18 +49,46 @@ export default async function OnboardingPage({
   }
 
   if (invite.completedAt) {
+    let message: React.ReactNode;
+    if (invite.activatedAt) {
+      message = (
+        <>
+          You&apos;re all set! Check <strong>{invite.email}</strong> for your
+          username and password — you can sign in at{" "}
+          <a href="/login" className="underline underline-offset-2">
+            /login
+          </a>
+          .
+        </>
+      );
+    } else if (invite.confirmedAt) {
+      message = (
+        <>
+          Your sign-up has been confirmed! Check <strong>{invite.email}</strong>{" "}
+          for your contract, or{" "}
+          <a
+            href={`/onboard/${token}/contract`}
+            className="underline underline-offset-2"
+          >
+            view it here
+          </a>
+          . Once we receive your signed copy, we&apos;ll send your login
+          details.
+        </>
+      );
+    } else {
+      message = (
+        <>
+          Thanks! Your information has been submitted for{" "}
+          <strong>{invite.email}</strong> and is being reviewed. We&apos;ll
+          email you with next steps.
+        </>
+      );
+    }
     return (
       <Shell>
         <Card>
-          <p className="text-sm">
-            You&apos;re all set! Your information has already been submitted
-            for <strong>{invite.email}</strong>. Check that inbox for your
-            username and password — you can sign in at{" "}
-            <a href="/login" className="underline underline-offset-2">
-              /login
-            </a>
-            .
-          </p>
+          <p className="text-sm">{message}</p>
         </Card>
       </Shell>
     );
