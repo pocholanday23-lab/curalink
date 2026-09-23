@@ -1,6 +1,5 @@
 import { CuralinkLogo } from "@/components/curalink-logo";
 import type { ContractData } from "@/lib/contract";
-import { DEFAULT_SOW_TEXT } from "@/lib/contract-defaults";
 
 const SIGNATORY_NAME = "Peter Pocholo Olanday";
 const SIGNATORY_TITLE = "Director";
@@ -405,12 +404,49 @@ export function ContractDocument({ data }: { data: ContractData }) {
         </div>
       </div>
 
-      <div className="break-before-page whitespace-pre-line">
+      <div className="break-before-page">
         <h2 className="mb-1 text-center text-xs font-semibold">Annex &ldquo;A&rdquo;</h2>
         <h1 className="mb-6 text-center text-lg font-bold uppercase">
           Statement of Work
         </h1>
-        {sowNotes || DEFAULT_SOW_TEXT}
+        {sowNotes ? (
+          <div className="whitespace-pre-line">{sowNotes}</div>
+        ) : (
+          <>
+            <p className="mb-2 font-semibold">1. Services / Deliverables</p>
+            <p className="mb-4">
+              The Independent Contractor shall render inbound sales and
+              customer service support to the End Client (LumberFi, Inc.),
+              including receiving and handling inbound calls, addressing
+              customer inquiries, and setting appointments, consistent with
+              the service standards and key performance indicators set out in
+              Section 2 below.
+            </p>
+
+            <p className="mb-2 font-semibold">
+              2. Key Performance Indicators / Service Standards
+            </p>
+            <p className="mb-4">
+              The Parties agree that the following service standards shall
+              apply:
+            </p>
+            <p className="mb-1 pl-6">
+              a. The Independent Contractor shall make{" "}
+              <strong>five hundred calls per week</strong>; and
+            </p>
+            <p className="mb-4 pl-6">
+              b. The Independent Contractor shall set a minimum of{" "}
+              <strong>three appointments per week</strong>.
+            </p>
+            <p>
+              These service standards shall serve as agreed benchmarks for
+              the expected output, quality, and timely completion of the
+              Services, while preserving the Independent Contractor&rsquo;s
+              discretion as to the manner, method, and sequence of performing
+              the work.
+            </p>
+          </>
+        )}
       </div>
     </div>
   );

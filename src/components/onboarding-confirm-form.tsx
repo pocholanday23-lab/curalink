@@ -10,7 +10,6 @@ import {
   Textarea,
 } from "@/components/ui";
 import { confirmOnboardingAction } from "@/lib/actions/onboarding-invites";
-import { DEFAULT_SOW_TEXT } from "@/lib/contract-defaults";
 
 export function OnboardingConfirmForm({
   inviteId,
@@ -81,20 +80,16 @@ export function OnboardingConfirmForm({
       </div>
 
       <Field
-        label="Statement of work (Annex A — shown on the contract as-is)"
+        label="Statement of work (Annex A) — leave blank for the standard scope"
         htmlFor="sowNotes"
       >
         <Textarea
           id="sowNotes"
           name="sowNotes"
-          rows={12}
-          defaultValue={DEFAULT_SOW_TEXT}
+          rows={8}
+          placeholder="Leave blank to use the standard LumberFi inbound sales scope (500 calls/week, 3 appointments/week). Type here only to describe a different engagement — it replaces the standard text on the contract exactly as typed."
         />
       </Field>
-      <p className="-mt-2 text-xs opacity-70">
-        Defaults to the standard LumberFi scope of work. Edit it for a
-        different client or engagement before confirming.
-      </p>
 
       <Button type="submit" disabled={pending} className="self-start">
         {pending ? "Confirming..." : "Confirm & send contract"}
