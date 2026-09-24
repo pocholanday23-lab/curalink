@@ -89,7 +89,7 @@ export default async function AdminEmployeesPage({
           <span className="px-4 pt-4 text-sm font-medium">Pending sign-ups</span>
           <PendingInvitesList
             reviewBasePath="/admin/employees"
-            canConfirm
+            isAdmin
             rows={pendingInvites.map((i) => ({
               id: i.id,
               email: i.email,

@@ -25,12 +25,17 @@ function isPast(date: Date): boolean {
 export function PendingInvitesList({
   rows,
   reviewBasePath,
-  canConfirm,
+  isAdmin,
 }: {
   rows: PendingInviteRow[];
   reviewBasePath: "/admin/employees" | "/manager/directory";
-  /** Only admins can confirm a sign-up (assign client/salary, send contract). */
-  canConfirm: boolean;
+  /**
+   * Only admins confirm a sign-up (assign client/salary, send contract) and
+   * activate it (only the admin receives the signed contract back). A
+   * manager can invite people and watch the process, but not act on either
+   * step.
+   */
+  isAdmin: boolean;
 }) {
   if (rows.length === 0) return null;
 
@@ -86,14 +91,21 @@ export function PendingInvitesList({
                   {r.completedAt && !r.confirmedAt && (
                     <Link href={`${reviewBasePath}/onboarding/${r.id}`}>
                       <Button type="button" variant="secondary">
-                        {canConfirm ? "Review & confirm" : "View"}
+                        {isAdmin ? "Review & confirm" : "View"}
                       </Button>
                     </Link>
                   )}
-                  {r.confirmedAt && (
+                  {r.confirmedAt && isAdmin && (
                     <form action={activateOnboardingInviteAction.bind(null, r.id)}>
                       <Button type="submit">Activate</Button>
                     </form>
+                  )}
+                  {r.confirmedAt && !isAdmin && (
+                    <Link href={`${reviewBasePath}/onboarding/${r.id}`}>
+                      <Button type="button" variant="secondary">
+                        View
+                      </Button>
+                    </Link>
                   )}
                 </div>
               </Td>

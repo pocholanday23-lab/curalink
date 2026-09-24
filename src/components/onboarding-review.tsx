@@ -147,9 +147,16 @@ export async function OnboardingReview({
           </p>
 
           {!invite.activatedAt ? (
-            <form action={activateOnboardingInviteAction.bind(null, invite.id)}>
-              <Button type="submit">Activate & email login details</Button>
-            </form>
+            actor.role === "ADMIN" ? (
+              <form action={activateOnboardingInviteAction.bind(null, invite.id)}>
+                <Button type="submit">Activate & email login details</Button>
+              </form>
+            ) : (
+              <p className="text-sm opacity-70">
+                Waiting on the admin to receive the signed contract and
+                activate the account.
+              </p>
+            )
           ) : (
             <p className="text-green-700 dark:text-green-400">
               Activated {formatDateTime(invite.activatedAt)} by{" "}

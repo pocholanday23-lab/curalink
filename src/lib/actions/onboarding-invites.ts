@@ -449,9 +449,11 @@ export async function confirmOnboardingAction(
  * hire their username and default password.
  */
 export async function activateOnboardingInviteAction(id: string): Promise<void> {
-  const found = await loadInviteForActor(id);
-  if (!found) return;
-  const { actor, invite } = found;
+  // Admin-only: only the admin receives the signed contract back, so only
+  // the admin is in a position to confirm it's in before activating.
+  const actor = await requireUser("ADMIN");
+  const invite = await prisma.onboardingInvite.findUnique({ where: { id } });
+  if (!invite) return;
   if (!invite.confirmedAt || invite.activatedAt || !invite.completedUserId) {
     return;
   }

@@ -86,7 +86,7 @@ export default async function ManagerDirectoryPage({
           <span className="px-4 pt-4 text-sm font-medium">Pending sign-ups</span>
           <PendingInvitesList
             reviewBasePath="/manager/directory"
-            canConfirm={false}
+            isAdmin={false}
             rows={pendingInvites.map((i) => ({
               id: i.id,
               email: i.email,
