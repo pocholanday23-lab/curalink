@@ -251,21 +251,12 @@ export async function completeOnboardingAction(
 }
 
 /** Everyone who should review a submitted sign-up: all admins + the assigned manager. */
-async function reviewersFor(managerId: string | null) {
-  const admins = await prisma.user.findMany({
+/** Only admins can confirm a sign-up, so only admins need the review notice. */
+async function reviewersFor() {
+  return prisma.user.findMany({
     where: { role: "ADMIN", active: true },
     select: { id: true, name: true, email: true, role: true },
   });
-  const manager = managerId
-    ? await prisma.user.findUnique({
-        where: { id: managerId },
-        select: { id: true, name: true, email: true, role: true },
-      })
-    : null;
-
-  const byId = new Map(admins.map((u) => [u.id, u]));
-  if (manager) byId.set(manager.id, manager);
-  return [...byId.values()];
 }
 
 async function notifyReviewers(inviteId: string) {
@@ -278,15 +269,11 @@ async function notifyReviewers(inviteId: string) {
 
     const [company, reviewers] = await Promise.all([
       getCompanySettings(),
-      reviewersFor(invite.managerId),
+      reviewersFor(),
     ]);
 
     for (const reviewer of reviewers) {
-      const reviewUrl = `${appUrl()}${
-        reviewer.role === "ADMIN"
-          ? `/admin/employees/onboarding/${invite.id}`
-          : `/manager/directory/onboarding/${invite.id}`
-      }`;
+      const reviewUrl = `${appUrl()}/admin/employees/onboarding/${invite.id}`;
       const mail = onboardingSubmittedEmail({
         companyName: company.name,
         reviewerName: reviewer.name,
@@ -339,6 +326,10 @@ export async function confirmOnboardingAction(
   _prev: OnboardingActionState,
   formData: FormData
 ): Promise<OnboardingActionState> {
+  // Confirming a sign-up (assigning client/salary and sending the contract)
+  // is admin-only; managers can invite and see status but not confirm.
+  const actor = await requireUser("ADMIN");
+
   if (!emailConfigured()) {
     return {
       error:
@@ -346,9 +337,8 @@ export async function confirmOnboardingAction(
     };
   }
 
-  const found = await loadInviteForActor(id);
-  if (!found) return { error: "Sign-up not found." };
-  const { actor, invite } = found;
+  const invite = await prisma.onboardingInvite.findUnique({ where: { id } });
+  if (!invite) return { error: "Sign-up not found." };
 
   if (!invite.completedAt || !invite.completedUserId) {
     return { error: "This person hasn't submitted their sign-up yet." };

@@ -25,9 +25,12 @@ function isPast(date: Date): boolean {
 export function PendingInvitesList({
   rows,
   reviewBasePath,
+  canConfirm,
 }: {
   rows: PendingInviteRow[];
   reviewBasePath: "/admin/employees" | "/manager/directory";
+  /** Only admins can confirm a sign-up (assign client/salary, send contract). */
+  canConfirm: boolean;
 }) {
   if (rows.length === 0) return null;
 
@@ -83,7 +86,7 @@ export function PendingInvitesList({
                   {r.completedAt && !r.confirmedAt && (
                     <Link href={`${reviewBasePath}/onboarding/${r.id}`}>
                       <Button type="button" variant="secondary">
-                        Review &amp; confirm
+                        {canConfirm ? "Review & confirm" : "View"}
                       </Button>
                     </Link>
                   )}

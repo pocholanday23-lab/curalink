@@ -109,7 +109,16 @@ export async function OnboardingReview({
           <h2 className="mb-4 text-sm font-semibold">
             Assign client, project, and salary
           </h2>
-          <OnboardingConfirmForm inviteId={invite.id} clients={clients} />
+          {actor.role === "ADMIN" ? (
+            <OnboardingConfirmForm inviteId={invite.id} clients={clients} />
+          ) : (
+            <p className="text-sm opacity-70">
+              Confirming a sign-up (assigning a client and salary, and
+              sending the contract) is handled by an admin. An admin has
+              been notified — you&apos;ll see it here once it&apos;s
+              confirmed.
+            </p>
+          )}
         </Card>
       ) : (
         <Card className="flex flex-col gap-3 text-sm">
