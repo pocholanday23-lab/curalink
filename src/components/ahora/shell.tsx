@@ -6,11 +6,15 @@ import { usePathname } from "next/navigation";
 import { signOutAction } from "@/lib/actions/auth";
 import { APP_TIME_ZONE } from "@/lib/format";
 import {
+  AttendanceIcon,
   CalendarIcon,
+  ClientsIcon,
   HomeIcon,
   PayslipIcon,
   PhFlagIcon,
   ProfileIcon,
+  ReportsIcon,
+  SettingsIcon,
   TeamIcon,
 } from "@/components/ahora/icons";
 import { AhoraSectionTab } from "@/components/ahora/ui";
@@ -19,18 +23,32 @@ function cx(...classes: Array<string | false | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-type AhoraLink = {
+/**
+ * Icons are looked up by name rather than passed as component references —
+ * Server Component layouts build the `links` array, and functions can't be
+ * passed as props from a Server to a Client Component.
+ */
+const ICONS = {
+  home: HomeIcon,
+  calendar: CalendarIcon,
+  payslip: PayslipIcon,
+  profile: ProfileIcon,
+  team: TeamIcon,
+  attendance: AttendanceIcon,
+  reports: ReportsIcon,
+  settings: SettingsIcon,
+  clients: ClientsIcon,
+} as const;
+
+export type AhoraIconName = keyof typeof ICONS;
+
+export type AhoraLink = {
   href: string;
   label: string;
-  icon: (p: { className?: string }) => React.ReactElement;
+  icon: AhoraIconName;
+  /** Adds a divider above this link — used to set off a distinct group. */
+  newGroup?: boolean;
 };
-
-const SELF_LINKS: AhoraLink[] = [
-  { href: "/employee", label: "Home", icon: HomeIcon },
-  { href: "/employee/time-card", label: "Time Card", icon: CalendarIcon },
-  { href: "/employee/payslips", label: "Payslips", icon: PayslipIcon },
-  { href: "/employee/profile", label: "Profile", icon: ProfileIcon },
-];
 
 const SECTION_LABELS: [string, string][] = [
   ["/employee/time-card", "TIME CARD"],
@@ -46,37 +64,48 @@ function ahoraSectionLabel(pathname: string): string {
   return "HOME";
 }
 
-/** Section tab (HOME / TIME CARD / ...) derived from the current route. */
+/** Section tab (HOME / TIME CARD / ...) derived from the current route. Employee section only. */
 export function AhoraAutoSectionTab() {
   const pathname = usePathname();
   return <AhoraSectionTab>{ahoraSectionLabel(pathname)}</AhoraSectionTab>;
 }
 
-export function AhoraSidebar({ isManager }: { isManager: boolean }) {
+/**
+ * Dark-green icon rail. `labeled` shows a small caption under each icon —
+ * used for Admin/Manager, which have more sections than the plain 4-icon
+ * employee rail can carry without one.
+ */
+export function AhoraSidebar({
+  links,
+  labeled = false,
+}: {
+  links: AhoraLink[];
+  labeled?: boolean;
+}) {
   const pathname = usePathname();
-  const links: AhoraLink[] = isManager
-    ? [
-        { href: "/manager/directory", label: "Team", icon: TeamIcon },
-        ...SELF_LINKS,
-      ]
-    : SELF_LINKS;
 
   return (
     <nav
-      aria-label="Employee sections"
-      className="flex w-[76px] shrink-0 flex-col items-center gap-2 bg-[var(--ahora-chrome)] py-4 print:hidden sm:w-[88px]"
+      aria-label="Sections"
+      className={cx(
+        "flex shrink-0 flex-col items-stretch gap-1 bg-[var(--ahora-chrome)] py-4 print:hidden",
+        labeled ? "w-[84px] sm:w-[96px]" : "w-[76px] sm:w-[88px]"
+      )}
     >
       {links.map((link) => {
         const active =
           pathname === link.href || pathname.startsWith(link.href + "/");
-        const Icon = link.icon;
+        const Icon = ICONS[link.icon];
         return (
           <Link
             key={link.href}
             href={link.href}
             title={link.label}
             aria-current={active ? "page" : undefined}
-            className="group flex flex-col items-center gap-1 py-2"
+            className={cx(
+              "group flex flex-col items-center gap-1 px-1 py-2",
+              link.newGroup && "mt-3 border-t border-white/10 pt-3"
+            )}
           >
             <span
               className={cx(
@@ -93,6 +122,16 @@ export function AhoraSidebar({ isManager }: { isManager: boolean }) {
                 )}
               />
             </span>
+            {labeled && (
+              <span
+                className={cx(
+                  "text-center text-[10.5px] font-medium leading-tight",
+                  active ? "text-white" : "text-white/70"
+                )}
+              >
+                {link.label}
+              </span>
+            )}
           </Link>
         );
       })}
@@ -114,7 +153,13 @@ function useManilaClock() {
   return now;
 }
 
-export function AhoraTopBar({ userName }: { userName: string }) {
+export function AhoraTopBar({
+  userName,
+  roleLabel,
+}: {
+  userName: string;
+  roleLabel?: string;
+}) {
   const now = useManilaClock();
   const time = new Intl.DateTimeFormat("en-US", {
     hour: "2-digit",
@@ -158,6 +203,7 @@ export function AhoraTopBar({ userName }: { userName: string }) {
       <div className="flex items-center gap-3 text-right">
         <span className="hidden text-sm font-medium sm:inline">
           {userName}
+          {roleLabel ? ` · ${roleLabel}` : ""}
         </span>
         <form action={signOutAction}>
           <button

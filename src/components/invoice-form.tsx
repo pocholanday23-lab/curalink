@@ -145,7 +145,7 @@ export function InvoiceForm({
         />
       </Field>
 
-      <fieldset className="flex flex-col gap-3 rounded-lg border border-black/10 p-4 dark:border-white/10">
+      <fieldset className="flex flex-col gap-3 rounded-lg border border-black/10 p-4">
         <legend className="px-1 text-sm font-semibold">Line items</legend>
         {lines.map((line, i) => (
           <div key={i} className="flex flex-wrap items-end gap-3">

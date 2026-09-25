@@ -87,7 +87,7 @@ export default async function ManagerAttendancePage({
         <Card className="p-0">
           <form
             method="get"
-            className="flex flex-wrap items-end gap-4 border-b border-black/10 px-4 py-3 dark:border-white/10"
+            className="flex flex-wrap items-end gap-4 border-b border-black/10 px-4 py-3"
           >
             <Field label="Start date" htmlFor="start">
               <Input id="start" name="start" type="date" defaultValue={start} />

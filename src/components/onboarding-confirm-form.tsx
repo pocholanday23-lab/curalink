@@ -27,7 +27,7 @@ export function OnboardingConfirmForm({
     <form action={formAction} className="flex flex-col gap-4">
       <ErrorText>{state?.error}</ErrorText>
       {state?.ok && (
-        <p className="text-sm text-green-700 dark:text-green-400">{state.ok}</p>
+        <p className="text-sm text-green-700">{state.ok}</p>
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">

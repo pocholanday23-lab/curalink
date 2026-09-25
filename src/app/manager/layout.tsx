@@ -1,14 +1,14 @@
 import { requireUser } from "@/lib/dal";
-import { NavBar } from "@/components/nav";
 import { ImpersonationBanner } from "@/components/impersonation-banner";
+import { AhoraSidebar, AhoraTopBar, type AhoraLink } from "@/components/ahora/shell";
 
-const links = [
-  { href: "/manager/directory", label: "Directory" },
-  { href: "/manager/attendance", label: "Attendance" },
-  { href: "/manager/time-log", label: "Team Time Log" },
-  { href: "/employee", label: "Clock In/Out" },
-  { href: "/employee/time-card", label: "My Time Card" },
-  { href: "/employee/payslips", label: "My Payslips" },
+const links: AhoraLink[] = [
+  { href: "/manager/directory", label: "Directory", icon: "team" },
+  { href: "/manager/attendance", label: "Attendance", icon: "attendance" },
+  { href: "/manager/time-log", label: "Team Time Log", icon: "calendar" },
+  { href: "/employee", label: "Clock In/Out", icon: "home", newGroup: true },
+  { href: "/employee/time-card", label: "My Time Card", icon: "calendar" },
+  { href: "/employee/payslips", label: "My Payslips", icon: "payslip" },
 ];
 
 export default async function ManagerLayout({
@@ -19,20 +19,20 @@ export default async function ManagerLayout({
   const user = await requireUser("MANAGER");
 
   return (
-    <div className="min-h-screen">
-      {user.impersonatorId && (
-        <ImpersonationBanner
-          name={user.name ?? user.email ?? ""}
-          impersonatorName={user.impersonatorName}
-        />
-      )}
-      <NavBar
-        links={links}
-        userName={user.name ?? user.email ?? ""}
-        roleLabel="Manager"
-        theme="green"
-      />
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">{children}</main>
+    <div className="flex min-h-screen">
+      <AhoraSidebar links={links} labeled />
+      <div className="flex min-w-0 flex-1 flex-col bg-white text-neutral-900">
+        {user.impersonatorId && (
+          <ImpersonationBanner
+            name={user.name ?? user.email ?? ""}
+            impersonatorName={user.impersonatorName}
+          />
+        )}
+        <AhoraTopBar userName={user.name ?? user.email ?? ""} roleLabel="Manager" />
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-8">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

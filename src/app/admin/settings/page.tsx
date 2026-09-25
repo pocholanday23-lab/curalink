@@ -33,7 +33,7 @@ export default async function SettingsPage() {
       </Card>
 
       <Card className="p-0">
-        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3 dark:border-white/10">
+        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
           <h2 className="text-sm font-semibold">Clients</h2>
           <Link href="/admin/clients/new">
             <Button variant="secondary">New client</Button>
@@ -59,7 +59,7 @@ export default async function SettingsPage() {
             {clients.map((c) => (
               <tr
                 key={c.id}
-                className="border-t border-black/5 dark:border-white/5"
+                className="border-t border-black/5"
               >
                 <Td>{c.name}</Td>
                 <Td>
@@ -89,7 +89,7 @@ export default async function SettingsPage() {
       </Card>
 
       <Card className="p-0">
-        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3 dark:border-white/10">
+        <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
           <h2 className="text-sm font-semibold">Assignments</h2>
           <Link href="/admin/assignments/new">
             <Button variant="secondary">New assignment</Button>
@@ -118,7 +118,7 @@ export default async function SettingsPage() {
             {assignments.map((a) => (
               <tr
                 key={a.id}
-                className="border-t border-black/5 dark:border-white/5"
+                className="border-t border-black/5"
               >
                 <Td>{a.employee.name}</Td>
                 <Td>

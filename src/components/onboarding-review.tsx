@@ -158,7 +158,7 @@ export async function OnboardingReview({
               </p>
             )
           ) : (
-            <p className="text-green-700 dark:text-green-400">
+            <p className="text-green-700">
               Activated {formatDateTime(invite.activatedAt)} by{" "}
               {invite.activatedBy?.name ?? "—"}. The account is live.
             </p>

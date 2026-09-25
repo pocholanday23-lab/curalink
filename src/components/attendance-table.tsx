@@ -72,7 +72,7 @@ export function AttendanceTable({
 
   if (employees.length === 0) {
     return (
-      <p className="px-4 py-6 text-sm text-black/50 dark:text-white/50">
+      <p className="px-4 py-6 text-sm text-black/50">
         No employees to show attendance for yet.
       </p>
     );
@@ -80,7 +80,7 @@ export function AttendanceTable({
 
   if (dates.length === 0) {
     return (
-      <p className="px-4 py-6 text-sm text-black/50 dark:text-white/50">
+      <p className="px-4 py-6 text-sm text-black/50">
         No dates in the selected range.
       </p>
     );
@@ -93,8 +93,8 @@ export function AttendanceTable({
   return (
     <>
       {hasDerived && (
-        <p className="flex items-center gap-2 border-b border-black/10 px-4 py-2 text-xs text-black/50 dark:border-white/10 dark:text-white/50">
-          <span className="inline-block h-3 w-3 rounded-sm border border-dashed border-black/30 bg-black/5 dark:border-white/30 dark:bg-white/10" />
+        <p className="flex items-center gap-2 border-b border-black/10 px-4 py-2 text-xs text-black/50">
+          <span className="inline-block h-3 w-3 rounded-sm border border-dashed border-black/30 bg-black/5" />
           Dashed = auto-detected from clock in/out. Pick a value to override.
         </p>
       )}
@@ -106,7 +106,7 @@ export function AttendanceTable({
             <Th key={iso}>
               <span
                 className={
-                  isWeekendISO(iso) ? "text-black/30 dark:text-white/30" : undefined
+                  isWeekendISO(iso) ? "text-black/30" : undefined
                 }
               >
                 {formatColumnHeader(iso)}
@@ -127,7 +127,7 @@ export function AttendanceTable({
           return (
             <tr
               key={employee.id}
-              className="border-t border-black/5 dark:border-white/5"
+              className="border-t border-black/5"
             >
               <Td className="font-medium">{employee.name}</Td>
               {dates.map((iso) => {
@@ -147,10 +147,10 @@ export function AttendanceTable({
                       }
                       className={`rounded border px-1.5 py-1 text-xs outline-none disabled:opacity-50 ${
                         isDerived
-                          ? "border-dashed border-black/30 bg-black/5 dark:border-white/30 dark:bg-white/10"
-                          : "border-black/15 bg-white dark:border-white/20 dark:bg-black/20"
+                          ? "border-dashed border-black/30 bg-black/5"
+                          : "border-black/15 bg-white"
                       } ${
-                        value === "ABSENT" ? "font-medium text-red-600 dark:text-red-400" : ""
+                        value === "ABSENT" ? "font-medium text-red-600" : ""
                       }`}
                     >
                       <option value="">—</option>

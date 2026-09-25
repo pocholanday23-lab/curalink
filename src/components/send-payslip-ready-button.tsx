@@ -40,7 +40,7 @@ export function SendPayslipReadyButton({
           {pending ? "Sending…" : "Notify members payslips are ready"}
         </Button>
         {state?.ok && (
-          <span className="text-sm text-green-700 dark:text-green-400">
+          <span className="text-sm text-green-700">
             {state.ok}
           </span>
         )}

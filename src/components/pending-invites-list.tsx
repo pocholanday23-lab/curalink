@@ -55,7 +55,7 @@ export function PendingInvitesList({
         {rows.map((r) => {
           const expired = !r.completedAt && isPast(r.expiresAt);
           return (
-            <tr key={r.id} className="border-t border-black/5 dark:border-white/5">
+            <tr key={r.id} className="border-t border-black/5">
               <Td>{r.email}</Td>
               <Td>{r.managerName ?? "—"}</Td>
               <Td>{r.invitedByName}</Td>

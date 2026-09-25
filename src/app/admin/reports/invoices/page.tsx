@@ -45,7 +45,7 @@ export default async function InvoicesListPage() {
             {invoices.map((inv) => (
               <tr
                 key={inv.id}
-                className="border-t border-black/5 dark:border-white/5"
+                className="border-t border-black/5"
               >
                 <Td className="font-medium">{inv.number}</Td>
                 <Td>{inv.client.name}</Td>

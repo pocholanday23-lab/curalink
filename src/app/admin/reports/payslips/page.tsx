@@ -81,7 +81,7 @@ export default async function ReportsPayslipsPage({
           description="Per-employee payslips for a closed pay period."
         />
         <Card>{filters}</Card>
-        <Card className="text-sm text-black/60 dark:text-white/60">
+        <Card className="text-sm text-black/60">
           {formatDateRange(selected.startDate, selected.endDate)} is still open.
           Close it under Pay Periods to generate payslips.
         </Card>

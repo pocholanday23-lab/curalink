@@ -55,7 +55,7 @@ export function CutoffConfigForm({
               : ""
           }
         />
-        <p className="text-xs text-black/50 dark:text-white/50">
+        <p className="text-xs text-black/50">
           {type === "SEMI_MONTHLY"
             ? "Any date — periods always run 1st–15th and 16th–end of month."
             : "The start date of the first period."}

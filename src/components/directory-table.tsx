@@ -44,7 +44,7 @@ export function DirectoryTable({
           </tr>
         )}
         {rows.map((r) => (
-          <tr key={r.id} className="border-t border-black/5 dark:border-white/5">
+          <tr key={r.id} className="border-t border-black/5">
             <Td>{r.name}</Td>
             <Td>{r.username}</Td>
             <Td>{r.role}</Td>

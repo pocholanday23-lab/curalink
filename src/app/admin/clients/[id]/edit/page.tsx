@@ -54,7 +54,7 @@ export default async function EditClientPage({
       <Card className="flex flex-col gap-4">
         <div>
           <h2 className="text-sm font-semibold">Assigned employees</h2>
-          <p className="text-sm text-black/60 dark:text-white/60">
+          <p className="text-sm text-black/60">
             Place an employee with this client. Rates can be adjusted later from
             the assignment.
           </p>

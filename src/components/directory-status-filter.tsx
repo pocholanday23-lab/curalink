@@ -12,7 +12,7 @@ export function DirectoryStatusFilter({ value }: { value: StatusFilter }) {
   const [selected, setSelected] = useState<StatusFilter>(value);
 
   return (
-    <div className="flex flex-wrap items-end gap-3 border-b border-black/10 px-4 py-3 dark:border-white/10">
+    <div className="flex flex-wrap items-end gap-3 border-b border-black/10 px-4 py-3">
       <Field label="Status" htmlFor="status">
         <Select
           id="status"

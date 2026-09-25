@@ -78,7 +78,7 @@ function Fieldset({
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="flex flex-col gap-4 rounded-lg border border-black/10 p-4 dark:border-white/10">
+    <fieldset className="flex flex-col gap-4 rounded-lg border border-black/10 p-4">
       <legend className="px-1 text-sm font-semibold">{legend}</legend>
       {children}
     </fieldset>
@@ -220,7 +220,7 @@ export function ProfileForm({
             </label>
           )}
           {mode === "create" && (
-            <p className="text-xs text-black/50 dark:text-white/50">
+            <p className="text-xs text-black/50">
               A username is generated automatically (first initial + last name).
               The account starts with the default password{" "}
               <code>password123</code> and must be changed on first login.
@@ -291,7 +291,7 @@ export function ProfileForm({
               onChange={(e) => setSpouseName(e.target.value)}
               className={
                 isSingle
-                  ? "cursor-not-allowed bg-black/10 dark:bg-white/10"
+                  ? "cursor-not-allowed bg-black/10"
                   : undefined
               }
             />
@@ -432,7 +432,7 @@ export function ProfileForm({
 
       <Fieldset legend="Dependents (optional)">
         {dependents.length === 0 && (
-          <p className="text-sm text-black/50 dark:text-white/50">
+          <p className="text-sm text-black/50">
             No dependents added.
           </p>
         )}

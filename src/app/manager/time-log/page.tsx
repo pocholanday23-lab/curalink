@@ -84,7 +84,7 @@ export default async function ManagerTimeLogPage({
       />
       <Card>{filters}</Card>
       <Card className="flex flex-wrap items-center gap-2 text-sm">
-        <span className="text-black/60 dark:text-white/60">
+        <span className="text-black/60">
           {formatDateRange(selected.startDate, selected.endDate)}
         </span>
         <Badge tone="amber">{formatHours(report.totalHours)} total</Badge>

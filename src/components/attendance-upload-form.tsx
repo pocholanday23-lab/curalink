@@ -31,7 +31,7 @@ export function AttendanceUploadForm() {
           {pending ? "Uploading..." : "Upload"}
         </Button>
       </div>
-      <p className="text-xs text-black/50 dark:text-white/50">
+      <p className="text-xs text-black/50">
         Expected columns: Last Name, First Name, then one column per date
         (P = present, A = absent, RD = rest day). Weekends left out of the
         file are filled in automatically as rest days. The fallback year is

@@ -72,11 +72,11 @@ export function AssignmentForm({
       ) : (
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-black/50 dark:text-white/50">Employee</p>
+            <p className="text-black/50">Employee</p>
             <p className="font-medium">{defaultValues?.employeeName}</p>
           </div>
           <div>
-            <p className="text-black/50 dark:text-white/50">Client</p>
+            <p className="text-black/50">Client</p>
             <p className="font-medium">{defaultValues?.clientName}</p>
           </div>
         </div>

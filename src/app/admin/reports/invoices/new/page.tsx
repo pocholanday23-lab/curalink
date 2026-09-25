@@ -119,7 +119,7 @@ export default async function NewInvoicePage({
       {loaded && suggestion.warnings.length > 0 && (
         <Card className="flex flex-col gap-1 text-sm">
           {suggestion.warnings.map((w, i) => (
-            <p key={i} className="text-amber-700 dark:text-amber-400">
+            <p key={i} className="text-amber-700">
               {w}
             </p>
           ))}

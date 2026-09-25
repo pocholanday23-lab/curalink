@@ -5,6 +5,7 @@ import type {
   SelectHTMLAttributes,
   TdHTMLAttributes,
   TextareaHTMLAttributes,
+  ThHTMLAttributes,
 } from "react";
 
 function cx(...classes: Array<string | false | undefined>) {
@@ -21,7 +22,7 @@ export function Card({
   return (
     <div
       className={cx(
-        "rounded-lg border border-black/10 bg-[var(--green-khaki)] p-6 text-neutral-900 shadow-sm",
+        "rounded-2xl bg-[var(--ahora-mint)] p-6 text-neutral-900 shadow-sm",
         className
       )}
     >
@@ -42,9 +43,11 @@ export function PageHeader({
   return (
     <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
+          {title}
+        </h1>
         {description && (
-          <p className="mt-1 text-sm opacity-70">{description}</p>
+          <p className="mt-1 text-sm text-neutral-600">{description}</p>
         )}
       </div>
       {actions && <div className="flex gap-2">{actions}</div>}
@@ -53,11 +56,10 @@ export function PageHeader({
 }
 
 const buttonVariants = {
-  primary:
-    "bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80",
+  primary: "bg-[var(--ahora-chrome)] text-white hover:bg-[#163d24]",
   secondary:
-    "border border-black/15 bg-white text-neutral-900 hover:bg-black/5 dark:border-white/20 dark:bg-transparent dark:text-white dark:hover:bg-white/10",
-  danger: "bg-red-600 text-white hover:bg-red-700",
+    "border border-black/15 bg-white text-neutral-900 hover:bg-black/5",
+  danger: "bg-red-700 text-white hover:bg-red-800",
 };
 
 export function Button({
@@ -100,16 +102,11 @@ export function Field({
 }
 
 export function Label(props: LabelHTMLAttributes<HTMLLabelElement>) {
-  return (
-    <label
-      className="text-sm font-medium text-black/80 dark:text-white/80"
-      {...props}
-    />
-  );
+  return <label className="text-sm font-medium text-neutral-700" {...props} />;
 }
 
 const inputClass =
-  "w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-black/40 disabled:opacity-50 dark:border-white/20 dark:bg-black/20 dark:text-white dark:focus:border-white/40";
+  "w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-[var(--ahora-chrome)] disabled:opacity-50";
 
 export function Input({
   className,
@@ -134,17 +131,27 @@ export function Select({
 
 export function Table({ children }: { children: React.ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-black/10 dark:border-white/10">
-      <table className="w-full min-w-full divide-y divide-black/10 text-sm dark:divide-white/10">
+    <div className="overflow-x-auto rounded-xl">
+      <table className="w-full min-w-full border-collapse text-sm">
         {children}
       </table>
     </div>
   );
 }
 
-export function Th({ children }: { children?: React.ReactNode }) {
+export function Th({
+  children,
+  className,
+  ...rest
+}: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
-    <th className="whitespace-nowrap px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-black/50 dark:text-white/50">
+    <th
+      className={cx(
+        "whitespace-nowrap bg-[var(--ahora-chrome)] px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-white first:rounded-tl-xl last:rounded-tr-xl",
+        className
+      )}
+      {...rest}
+    >
       {children}
     </th>
   );
@@ -157,7 +164,10 @@ export function Td({
 }: TdHTMLAttributes<HTMLTableCellElement>) {
   return (
     <td
-      className={cx("whitespace-nowrap px-4 py-2.5 align-middle", className)}
+      className={cx(
+        "whitespace-nowrap border-b border-dashed border-[var(--ahora-mint-line)] bg-[var(--ahora-mint)] px-4 py-2.5 align-middle",
+        className
+      )}
       {...rest}
     >
       {children}
@@ -173,12 +183,10 @@ export function Badge({
   tone?: "neutral" | "green" | "amber" | "red";
 }) {
   const tones = {
-    neutral: "bg-black/5 text-black/70 dark:bg-white/10 dark:text-white/70",
-    green:
-      "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300",
-    amber:
-      "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
-    red: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300",
+    neutral: "bg-black/5 text-black/70",
+    green: "bg-green-100 text-green-800",
+    amber: "bg-amber-100 text-amber-800",
+    red: "bg-red-100 text-red-800",
   };
   return (
     <span
@@ -195,7 +203,7 @@ export function Badge({
 export function ErrorText({ children }: { children?: string }) {
   if (!children) return null;
   return (
-    <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-300">
+    <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
       {children}
     </p>
   );

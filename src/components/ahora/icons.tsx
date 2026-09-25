@@ -108,6 +108,77 @@ export function TeamIcon({ className }: IconProps) {
   );
 }
 
+export function AttendanceIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <rect
+        x="5"
+        y="4"
+        width="14"
+        height="17"
+        rx="1.5"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path d="M9 3v3M15 3v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path
+        d="M8.3 12.3 10.3 14.3 15.5 9"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function ReportsIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M4 20V10M10 20V4M16 20v-7M20 20H4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function SettingsIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
+      <path
+        d="M12 3v2.2M12 18.8V21M21 12h-2.2M5.2 12H3M18 6l-1.6 1.6M7.6 16.4 6 18M18 18l-1.6-1.6M7.6 7.6 6 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+export function ClientsIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M4 20V6.5A1.5 1.5 0 0 1 5.5 5H12v15M12 9h7.5A1.5 1.5 0 0 1 21 10.5V20"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7 8.5h2M7 12h2M7 15.5h2M15 13h2M15 16.5h2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 /** Simplified Philippine flag, decorative only. */
 export function PhFlagIcon({ className }: IconProps) {
   return (

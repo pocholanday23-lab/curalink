@@ -27,7 +27,7 @@ export default async function ImpersonateConfirmPage({
         <Card className="flex flex-col gap-4">
           <div>
             <h1 className="text-lg font-semibold">Log in as another user</h1>
-            <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+            <p className="mt-1 text-sm text-black/60">
               You are about to switch this browser&apos;s session to{" "}
               <span className="font-medium">{target.name}</span> (@
               {target.username}, {target.role.toLowerCase()}).
@@ -35,7 +35,7 @@ export default async function ImpersonateConfirmPage({
           </div>
 
           {blocked ? (
-            <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:bg-amber-900/20 dark:text-amber-300">
+            <p className="rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
               {target.role === "ADMIN"
                 ? "Admins cannot be impersonated."
                 : target.id === admin.id
@@ -43,7 +43,7 @@ export default async function ImpersonateConfirmPage({
                   : "That account is inactive."}
             </p>
           ) : (
-            <p className="rounded-md bg-black/[0.03] px-3 py-2 text-xs text-black/60 dark:bg-white/[0.06] dark:text-white/60">
+            <p className="rounded-md bg-black/[0.03] px-3 py-2 text-xs text-black/60">
               Your admin session in other tabs will also become this user until
               you choose <span className="font-medium">Exit</span> from the
               banner. To keep an admin session open at the same time, use a

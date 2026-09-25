@@ -1,13 +1,13 @@
 import { requireUser } from "@/lib/dal";
-import { NavBar } from "@/components/nav";
+import { AhoraSidebar, AhoraTopBar, type AhoraLink } from "@/components/ahora/shell";
 
-const links = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/employees", label: "Employees" },
-  { href: "/admin/attendance", label: "Attendance" },
-  { href: "/admin/pay-periods", label: "Pay Periods" },
-  { href: "/admin/reports", label: "Reports" },
-  { href: "/admin/settings", label: "Settings" },
+const links: AhoraLink[] = [
+  { href: "/admin", label: "Dashboard", icon: "home" },
+  { href: "/admin/employees", label: "Employees", icon: "team" },
+  { href: "/admin/attendance", label: "Attendance", icon: "attendance" },
+  { href: "/admin/pay-periods", label: "Pay Periods", icon: "calendar" },
+  { href: "/admin/reports", label: "Reports", icon: "reports" },
+  { href: "/admin/settings", label: "Settings", icon: "settings" },
 ];
 
 export default async function AdminLayout({
@@ -18,14 +18,14 @@ export default async function AdminLayout({
   const user = await requireUser("ADMIN");
 
   return (
-    <div className="min-h-screen">
-      <NavBar
-        links={links}
-        userName={user.name ?? user.email ?? ""}
-        roleLabel="Admin"
-        theme="green"
-      />
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6">{children}</main>
+    <div className="flex min-h-screen">
+      <AhoraSidebar links={links} labeled />
+      <div className="flex min-w-0 flex-1 flex-col bg-white text-neutral-900">
+        <AhoraTopBar userName={user.name ?? user.email ?? ""} roleLabel="Admin" />
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-8">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

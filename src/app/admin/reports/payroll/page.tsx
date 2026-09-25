@@ -56,7 +56,7 @@ export default async function ReportsPayrollPage({
         <PageHeader title="Payroll" description={description} actions={periodPicker} />
         <Card className="flex flex-col gap-2 text-sm">
           <p className="font-medium">This pay period is still open.</p>
-          <p className="text-black/60 dark:text-white/60">
+          <p className="text-black/60">
             Payroll is only generated once a period is finalized. Close{" "}
             {formatDateRange(selected.startDate, selected.endDate)} under{" "}
             <a className="underline" href="/admin/pay-periods">
@@ -76,7 +76,7 @@ export default async function ReportsPayrollPage({
       <PageHeader title="Payroll" description={description} actions={periodPicker} />
 
       <Card className="flex flex-wrap items-center justify-between gap-4 text-sm">
-        <p className="text-black/60 dark:text-white/60">
+        <p className="text-black/60">
           {formatDateRange(selected.startDate, selected.endDate)} · pay date{" "}
           {formatDate(selected.payDate)} · working days in month:{" "}
           {report.workingDaysMonth}
@@ -92,7 +92,7 @@ export default async function ReportsPayrollPage({
       {report.warnings.length > 0 && (
         <Card className="flex flex-col gap-1 text-sm">
           {report.warnings.map((w, i) => (
-            <p key={i} className="text-amber-700 dark:text-amber-400">
+            <p key={i} className="text-amber-700">
               {w}
             </p>
           ))}
@@ -118,7 +118,7 @@ export default async function ReportsPayrollPage({
             {report.rows.map((r) => (
               <tr
                 key={r.employeeId}
-                className="border-t border-black/5 dark:border-white/5"
+                className="border-t border-black/5"
               >
                 <Td>
                   {r.employeeName}
@@ -144,12 +144,12 @@ export default async function ReportsPayrollPage({
                 <Td
                   className={
                     r.attendanceIncomplete
-                      ? "text-amber-700 dark:text-amber-400"
+                      ? "text-amber-700"
                       : undefined
                   }
                 >
                   {r.totalDays}
-                  <span className="text-black/40 dark:text-white/40">
+                  <span className="text-black/40">
                     {" "}
                     / {r.expectedWorkingDays}
                   </span>
@@ -165,7 +165,7 @@ export default async function ReportsPayrollPage({
             ))}
           </tbody>
           <tfoot>
-            <tr className="border-t border-black/10 font-medium dark:border-white/10">
+            <tr className="border-t border-black/10 font-medium">
               <Td>Total</Td>
               <Td />
               <Td>{report.totals.present}</Td>

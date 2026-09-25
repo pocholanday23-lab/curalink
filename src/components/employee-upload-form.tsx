@@ -37,7 +37,7 @@ export function EmployeeUploadForm({
           {pending ? "Uploading..." : "Upload"}
         </Button>
       </div>
-      <p className="text-xs text-black/50 dark:text-white/50">
+      <p className="text-xs text-black/50">
         The importer reads every sheet and matches people by First Name + Last
         Name. Recognised columns include: Last/First/Middle Name, Salary USD,
         Salary PHP, Birth date, Contact Number, Home Address, Marital Status,

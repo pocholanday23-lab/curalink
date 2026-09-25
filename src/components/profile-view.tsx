@@ -27,7 +27,7 @@ export type ProfileViewUser = {
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5 py-2">
-      <dt className="text-xs font-semibold uppercase tracking-wide text-black/50 dark:text-white/50">
+      <dt className="text-xs font-semibold uppercase tracking-wide text-black/50">
         {label}
       </dt>
       <dd className="text-sm">{value || "—"}</dd>
@@ -124,7 +124,7 @@ export function ProfileView({ user }: { user: ProfileViewUser }) {
               <li key={d.id}>
                 {d.name}
                 {d.birthDate ? (
-                  <span className="text-black/50 dark:text-white/50">
+                  <span className="text-black/50">
                     {" "}
                     — {d.birthDate}
                   </span>
@@ -133,7 +133,7 @@ export function ProfileView({ user }: { user: ProfileViewUser }) {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-black/50 dark:text-white/50">
+          <p className="text-sm text-black/50">
             No dependents on file.
           </p>
         )}

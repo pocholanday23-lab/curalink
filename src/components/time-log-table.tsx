@@ -11,7 +11,7 @@ export function TimeLogTable({
 }) {
   if (groups.length === 0) {
     return (
-      <Card className="text-sm text-black/50 dark:text-white/50">
+      <Card className="text-sm text-black/50">
         {emptyLabel}
       </Card>
     );
@@ -21,7 +21,7 @@ export function TimeLogTable({
     <div className="flex flex-col gap-6">
       {groups.map((g) => (
         <Card key={g.employeeId} className="p-0">
-          <div className="flex items-center justify-between border-b border-black/10 px-4 py-3 dark:border-white/10">
+          <div className="flex items-center justify-between border-b border-black/10 px-4 py-3">
             <span className="font-medium">{g.employeeName}</span>
             <Badge>{formatHours(g.totalHours)} total</Badge>
           </div>
@@ -38,7 +38,7 @@ export function TimeLogTable({
               {g.entries.map((e) => (
                 <tr
                   key={e.id}
-                  className="border-t border-black/5 dark:border-white/5"
+                  className="border-t border-black/5"
                 >
                   <Td>{e.clientLabel}</Td>
                   <Td>{formatDateTime(e.clockIn)}</Td>

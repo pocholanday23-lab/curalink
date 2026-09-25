@@ -62,7 +62,7 @@ export function ClientAssignments({
             {assignments.map((a) => (
               <tr
                 key={a.id}
-                className="border-t border-black/5 dark:border-white/5"
+                className="border-t border-black/5"
               >
                 <Td>{a.employeeName}</Td>
                 <Td>{a.projectName ?? "—"}</Td>
@@ -87,14 +87,14 @@ export function ClientAssignments({
           </tbody>
         </Table>
       ) : (
-        <p className="text-sm text-black/50 dark:text-white/50">
+        <p className="text-sm text-black/50">
           No employees assigned to this client yet.
         </p>
       )}
 
       <form
         action={formAction}
-        className="flex flex-col gap-4 rounded-lg border border-black/10 p-4 dark:border-white/10"
+        className="flex flex-col gap-4 rounded-lg border border-black/10 p-4"
       >
         <span className="text-sm font-medium">Assign an employee</span>
         <ErrorText>{state?.error}</ErrorText>

@@ -37,9 +37,9 @@ export default async function ReportsPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         {sections.map((s) => (
           <Link key={s.href} href={s.href}>
-            <Card className="h-full transition-colors hover:border-black/30 dark:hover:border-white/30">
+            <Card className="h-full transition-colors hover:border-black/30">
               <h2 className="text-sm font-semibold">{s.title}</h2>
-              <p className="mt-1 text-sm text-black/60 dark:text-white/60">
+              <p className="mt-1 text-sm text-black/60">
                 {s.body}
               </p>
             </Card>

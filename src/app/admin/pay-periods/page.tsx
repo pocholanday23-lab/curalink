@@ -69,7 +69,7 @@ export default async function AdminPayPeriodsPage() {
             {periods.map((p) => (
               <tr
                 key={p.id}
-                className="border-t border-black/5 dark:border-white/5"
+                className="border-t border-black/5"
               >
                 <Td>{formatDateRange(p.startDate, p.endDate)}</Td>
                 <Td>{formatDate(p.payDate)}</Td>

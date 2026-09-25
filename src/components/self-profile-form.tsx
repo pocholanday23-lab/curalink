@@ -6,7 +6,7 @@ import { BANK_TYPE_OPTIONS, MARITAL_STATUS_OPTIONS } from "@/lib/hr";
 import type { HrActionState } from "@/lib/actions/hr";
 
 const box =
-  "w-full rounded-md border border-white/20 bg-[#374151] px-3 py-2 text-sm text-white placeholder-white/40 outline-none focus:border-white/50 disabled:cursor-not-allowed disabled:opacity-60";
+  "w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-[var(--ahora-chrome)] disabled:cursor-not-allowed disabled:border-black/10 disabled:bg-black/5 disabled:text-neutral-500";
 
 export type SelfProfileValues = {
   firstName: string;
@@ -58,8 +58,10 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <fieldset className="flex flex-col gap-4 rounded-lg border border-black/10 p-4">
-      <legend className="px-1 text-sm font-semibold">{title}</legend>
+    <fieldset className="flex flex-col gap-4 rounded-lg border border-[var(--ahora-mint-line)] bg-white/40 p-4">
+      <legend className="px-1 text-sm font-semibold text-neutral-800">
+        {title}
+      </legend>
       {children}
     </fieldset>
   );

@@ -19,7 +19,7 @@ export function OnboardingInviteForm({
     <form action={formAction} className="flex flex-col gap-3">
       <ErrorText>{state?.error}</ErrorText>
       {state?.ok && (
-        <p className="text-sm text-green-700 dark:text-green-400">{state.ok}</p>
+        <p className="text-sm text-green-700">{state.ok}</p>
       )}
       <div className="flex flex-wrap items-end gap-4">
         <div className="min-w-[16rem] flex-1">

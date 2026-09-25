@@ -19,7 +19,7 @@ export function CompanySettingsForm({
     <form action={formAction} className="flex flex-col gap-4">
       <ErrorText>{state?.error}</ErrorText>
       {state?.saved && (
-        <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-300">
+        <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
           Saved.
         </p>
       )}
