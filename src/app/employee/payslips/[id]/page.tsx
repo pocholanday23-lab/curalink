@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/dal";
-import { Card } from "@/components/ui";
 import { PrintButton } from "@/components/print-button";
 import { PayslipDocument } from "@/components/payslip-document";
 import { computePayslipsForPeriod, type PayslipBatch } from "@/lib/payslip";
@@ -29,7 +28,7 @@ export default async function EmployeePayslipDetailPage({
         <h1 className="text-2xl font-semibold tracking-tight">Payslip</h1>
         <PrintButton />
       </div>
-      <Card className="print:border-0 print:p-0 print:shadow-none">
+      <div className="rounded-lg border border-black/10 print:border-0">
         <PayslipDocument
           company={batch.company}
           payslip={mine}
@@ -37,7 +36,7 @@ export default async function EmployeePayslipDetailPage({
           dateProcessed={batch.period.payDate}
           workingDaysMonth={batch.workingDaysMonth}
         />
-      </Card>
+      </div>
     </div>
   );
 }

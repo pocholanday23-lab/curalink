@@ -13,6 +13,16 @@
   /* App committed to a single (green) look. */
   --background: var(--green-hunter);
   --foreground: #ffffff;
+
+  /* "Ahora" dashboard look — employee self-service pages only. */
+  --ahora-chrome: #1e4a2e;
+  --ahora-chrome-active: rgba(142, 160, 129, 0.55); /* --green-sage, translucent */
+  --ahora-mint: #dcecd5;
+  --ahora-mint-line: #e0955f;
+  --ahora-ring-workdays: var(--green-khaki);
+  --ahora-ring-absent: #a89f8c;
+  --ahora-ring-restday: var(--green-moss);
+  --ahora-ring-present: #a3714a;
 }
 
 @theme inline {

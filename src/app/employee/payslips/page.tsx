@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/dal";
 import { prisma } from "@/lib/prisma";
-import { Card, PageHeader, Table, Td, Th } from "@/components/ui";
+import { AhoraCard, AhoraTable, AhoraTd, AhoraTh } from "@/components/ahora/ui";
 import { formatDate, formatDateRange } from "@/lib/format";
 import { computePayslipsForPeriod } from "@/lib/payslip";
 
@@ -28,53 +28,41 @@ export default async function EmployeePayslipsPage() {
     })
   );
 
+  if (rows.length === 0) {
+    return <AhoraCard>No payslips yet.</AhoraCard>;
+  }
+
   return (
-    <div className="flex flex-col gap-6">
-      <PageHeader
-        title="Payslips"
-        description="Payslips are available once your admin closes a pay period."
-      />
-      <Card className="p-0">
-        <Table>
-          <thead>
-            <tr>
-              <Th>Pay period</Th>
-              <Th>Pay date</Th>
-              <Th>Days present</Th>
-              <Th>Net pay</Th>
-              <Th />
+    <div className="overflow-hidden rounded-2xl">
+      <AhoraTable>
+        <thead>
+          <tr>
+            <AhoraTh>Pay period</AhoraTh>
+            <AhoraTh>Payout Date</AhoraTh>
+            <AhoraTh>Days present</AhoraTh>
+            <AhoraTh>Net pay</AhoraTh>
+            <AhoraTh />
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(({ period, payslip }) => (
+            <tr key={period.id}>
+              <AhoraTd>{formatDateRange(period.startDate, period.endDate)}</AhoraTd>
+              <AhoraTd>{formatDate(period.payDate)}</AhoraTd>
+              <AhoraTd>{payslip?.present ?? 0}</AhoraTd>
+              <AhoraTd>{payslip ? php(payslip.netPay) : "—"}</AhoraTd>
+              <AhoraTd>
+                <Link
+                  href={`/employee/payslips/${period.id}`}
+                  className="font-medium text-[var(--ahora-chrome)] underline underline-offset-2"
+                >
+                  View
+                </Link>
+              </AhoraTd>
             </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 && (
-              <tr>
-                <Td colSpan={5} className="text-black/50">
-                  No payslips yet.
-                </Td>
-              </tr>
-            )}
-            {rows.map(({ period, payslip }) => (
-              <tr
-                key={period.id}
-                className="border-t border-black/5 dark:border-white/5"
-              >
-                <Td>{formatDateRange(period.startDate, period.endDate)}</Td>
-                <Td>{formatDate(period.payDate)}</Td>
-                <Td>{payslip?.present ?? 0}</Td>
-                <Td>{payslip ? php(payslip.netPay) : "—"}</Td>
-                <Td>
-                  <Link
-                    href={`/employee/payslips/${period.id}`}
-                    className="font-medium underline underline-offset-2"
-                  >
-                    View
-                  </Link>
-                </Td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </Card>
+          ))}
+        </tbody>
+      </AhoraTable>
     </div>
   );
 }

@@ -6,9 +6,11 @@ import { Select } from "@/components/ui";
 export function PeriodSelect({
   periods,
   selectedId,
+  className,
 }: {
   periods: { id: string; label: string }[];
   selectedId: string;
+  className?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -17,6 +19,7 @@ export function PeriodSelect({
   return (
     <Select
       value={selectedId}
+      className={className}
       onChange={(e) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("payPeriodId", e.target.value);

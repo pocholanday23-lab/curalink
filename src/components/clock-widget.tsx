@@ -2,13 +2,15 @@
 
 import { useActionState } from "react";
 import { clockInAction, clockOutAction } from "@/lib/actions/time-entries";
-import { Button, ErrorText, Select } from "@/components/ui";
 import { formatDateTime } from "@/lib/format";
 
 type AssignmentOption = {
   id: string;
   label: string;
 };
+
+const bigButton =
+  "w-full rounded-2xl px-8 py-6 text-lg font-bold uppercase tracking-wide text-white shadow-lg transition-colors disabled:cursor-not-allowed disabled:opacity-60";
 
 export function ClockWidget({
   openEntryClockIn,
@@ -28,33 +30,39 @@ export function ClockWidget({
 
   if (openEntryClockIn) {
     return (
-      <form action={outAction} className="flex flex-col gap-4">
-        <ErrorText>{outState?.error}</ErrorText>
+      <form action={outAction} className="flex flex-col items-center gap-4 text-center">
+        {outState?.error && (
+          <p className="text-sm text-red-600">{outState.error}</p>
+        )}
         <div>
-          <p className="text-sm text-black/60 dark:text-white/60">
-            Clocked in since
-          </p>
-          <p className="text-lg font-semibold">
+          <p className="text-sm text-neutral-500">Clocked in since</p>
+          <p className="text-lg font-semibold text-neutral-900">
             {formatDateTime(openEntryClockIn)}
           </p>
         </div>
-        <Button
+        <button
           type="submit"
-          variant="danger"
           disabled={outPending}
-          className="w-full"
+          className={`${bigButton} bg-[#8a3b2c] hover:bg-[#742f22]`}
         >
-          {outPending ? "Clocking out..." : "Clock out"}
-        </Button>
+          {outPending ? "Clocking out…" : "Time Out"}
+        </button>
       </form>
     );
   }
 
   return (
-    <form action={inAction} className="flex flex-col gap-4">
-      <ErrorText>{inState?.error}</ErrorText>
+    <form action={inAction} className="flex flex-col items-center gap-4">
+      {inState?.error && (
+        <p className="text-sm text-red-600">{inState.error}</p>
+      )}
       {assignments.length > 1 && (
-        <Select name="assignmentId" required defaultValue="">
+        <select
+          name="assignmentId"
+          required
+          defaultValue=""
+          className="w-full rounded-md border border-black/15 bg-white px-3 py-2 text-sm text-neutral-900"
+        >
           <option value="" disabled>
             Select client / project
           </option>
@@ -63,20 +71,20 @@ export function ClockWidget({
               {a.label}
             </option>
           ))}
-        </Select>
+        </select>
       )}
       {assignments.length === 0 && (
-        <p className="text-sm text-amber-700 dark:text-amber-400">
+        <p className="text-center text-sm text-amber-700">
           You have no active client assignment. Contact your admin.
         </p>
       )}
-      <Button
+      <button
         type="submit"
         disabled={inPending || assignments.length === 0}
-        className="w-full"
+        className={`${bigButton} bg-[var(--ahora-chrome)] hover:bg-[#163d24]`}
       >
-        {inPending ? "Clocking in..." : "Clock in"}
-      </Button>
+        {inPending ? "Clocking in…" : "Time In / Out"}
+      </button>
     </form>
   );
 }
