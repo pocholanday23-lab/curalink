@@ -47,11 +47,16 @@ export async function startImpersonationAction(userId: string) {
   }
 }
 
-export async function stopImpersonationAction() {
+/**
+ * Restores the admin's own session (no redirect — this is invoked from a
+ * client click handler in a tab opened by "Log in as", which closes the tab
+ * itself afterward rather than navigating it anywhere).
+ */
+export async function stopImpersonationAction(): Promise<{ ok: boolean }> {
   const user = await getSessionUser();
   const adminId = user?.impersonatorId;
   if (!adminId) {
-    redirect("/");
+    return { ok: false };
   }
 
   const token = signImpersonationToken({
@@ -61,13 +66,11 @@ export async function stopImpersonationAction() {
   });
 
   try {
-    await signIn("impersonate", {
-      token,
-      redirectTo: "/admin/employees",
-    });
+    await signIn("impersonate", { token, redirect: false });
+    return { ok: true };
   } catch (error) {
     if (error instanceof AuthError) {
-      redirect("/login");
+      return { ok: false };
     }
     throw error;
   }
