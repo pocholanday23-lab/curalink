@@ -7,7 +7,7 @@ const links: AhoraLink[] = [
   { href: "/admin/attendance", label: "Attendance", icon: "attendance" },
   { href: "/admin/pay-periods", label: "Pay Periods", icon: "calendar" },
   { href: "/admin/reports", label: "Reports", icon: "reports" },
-  { href: "/admin/settings", label: "Settings", icon: "settings" },
+  { href: "/admin/settings", label: "Admin", icon: "settings" },
 ];
 
 export default async function AdminLayout({

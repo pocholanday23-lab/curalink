@@ -393,17 +393,6 @@ async function main() {
     },
   });
 
-  await prisma.client.upsert({
-    where: { id: "seed-client-solace" },
-    update: {},
-    create: {
-      id: "seed-client-solace",
-      name: "Solace Health",
-      contactName: "Jordan Lee",
-      contactEmail: "jordan@solacehealth.example",
-    },
-  });
-
   await prisma.cutoffConfig.upsert({
     where: { id: "seed-cutoff-config" },
     update: {},

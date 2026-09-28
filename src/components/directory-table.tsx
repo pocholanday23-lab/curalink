@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Badge, Table, Td, Th } from "@/components/ui";
 import { ImpersonateButton } from "@/components/impersonate-button";
+import { EditIcon } from "@/components/ahora/icons";
+import {
+  ContractIconButton,
+  type ContractListItem,
+} from "@/components/admin/contract-icon-button";
 
 export type DirectoryRow = {
   id: string;
@@ -9,16 +14,19 @@ export type DirectoryRow = {
   role: string;
   active: boolean;
   managerName: string | null;
+  contracts?: ContractListItem[];
 };
 
 export function DirectoryTable({
   rows,
   basePath,
   showImpersonate = false,
+  showContracts = false,
 }: {
   rows: DirectoryRow[];
   basePath: string;
   showImpersonate?: boolean;
+  showContracts?: boolean;
 }) {
   const cols = 6 + (showImpersonate ? 1 : 0);
 
@@ -45,7 +53,11 @@ export function DirectoryTable({
         )}
         {rows.map((r) => (
           <tr key={r.id} className="border-t border-black/5">
-            <Td>{r.name}</Td>
+            <Td>
+              <Link href={`${basePath}/${r.id}`} className="hover:underline">
+                {r.name}
+              </Link>
+            </Td>
             <Td>{r.username}</Td>
             <Td>{r.role}</Td>
             <Td>{r.managerName ?? "—"}</Td>
@@ -63,12 +75,18 @@ export function DirectoryTable({
               </Td>
             )}
             <Td>
-              <Link
-                href={`${basePath}/${r.id}`}
-                className="font-medium underline underline-offset-2"
-              >
-                View
-              </Link>
+              <div className="flex items-center gap-1">
+                <Link
+                  href={`${basePath}/${r.id}/edit`}
+                  title="Edit"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-[var(--ahora-chrome)] hover:bg-black/5 [&_svg]:h-[18px] [&_svg]:w-[18px]"
+                >
+                  <EditIcon />
+                </Link>
+                {showContracts && (
+                  <ContractIconButton contracts={r.contracts ?? []} />
+                )}
+              </div>
             </Td>
           </tr>
         ))}

@@ -76,6 +76,8 @@ model User {
   timeEntries       TimeEntry[]
   attendanceRecords AttendanceRecord[]
   emailsReceived    EmailLog[]
+  contracts         EmployeeContract[] @relation("EmployeeContractOwner")
+  contractsUploaded EmployeeContract[] @relation("EmployeeContractUploadedBy")
 
   onboardingInvitesSent      OnboardingInvite[] @relation("OnboardingInviteSender")
   onboardingInvitesAssigned  OnboardingInvite[] @relation("OnboardingInviteManager")
@@ -133,8 +135,41 @@ model Client {
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
 
-  assignments    Assignment[]
-  clientInvoices ClientInvoice[]
+  assignments       Assignment[]
+  clientInvoices    ClientInvoice[]
+  employeeContracts EmployeeContract[]
+}
+
+/**
+ * An uploaded signed contract (PDF) for one employee. Fields are extracted
+ * from the PDF on upload (best-effort — the org's contracts follow a
+ * consistent Term Sheet layout) and can be corrected afterward without
+ * re-uploading. The file itself is stored in the row (small PDFs; no blob
+ * storage configured for this app).
+ */
+model EmployeeContract {
+  id         String  @id @default(cuid())
+  employeeId String
+  employee   User    @relation("EmployeeContractOwner", fields: [employeeId], references: [id])
+  clientId   String?
+  client     Client? @relation(fields: [clientId], references: [id])
+
+  /** Client name as read off the PDF, kept even if it was matched to a Client row. */
+  clientNameRaw String?
+  billRatePhp   Decimal?  @db.Decimal(12, 2)
+  contractStart DateTime? @db.Date
+  contractEnd   DateTime? @db.Date
+
+  fileName String
+  fileType String @default("application/pdf")
+  fileSize Int
+  fileData Bytes
+
+  uploadedById String?
+  uploadedBy   User?    @relation("EmployeeContractUploadedBy", fields: [uploadedById], references: [id])
+  uploadedAt   DateTime @default(now())
+
+  @@index([employeeId])
 }
 
 model Assignment {

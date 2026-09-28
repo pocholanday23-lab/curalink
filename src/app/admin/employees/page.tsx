@@ -7,6 +7,7 @@ import { BulkUploadDialog } from "@/components/bulk-upload-dialog";
 import { DirectoryStatusFilter } from "@/components/directory-status-filter";
 import { parseStatusFilter } from "@/lib/status-filter";
 import { PendingInvitesList } from "@/components/pending-invites-list";
+import { formatDate, formatDateTime } from "@/lib/format";
 
 export default async function AdminEmployeesPage({
   searchParams,
@@ -26,6 +27,37 @@ export default async function AdminEmployeesPage({
     orderBy: { name: "asc" },
   });
 
+  const contracts = await prisma.employeeContract.findMany({
+    orderBy: { uploadedAt: "desc" },
+    select: {
+      id: true,
+      employeeId: true,
+      fileName: true,
+      uploadedAt: true,
+      contractStart: true,
+      contractEnd: true,
+    },
+  });
+  const contractsByEmployeeId = new Map<
+    string,
+    DirectoryRow["contracts"]
+  >();
+  for (const c of contracts) {
+    const list = contractsByEmployeeId.get(c.employeeId) ?? [];
+    list.push({
+      id: c.id,
+      fileName: c.fileName,
+      uploadedLabel: formatDateTime(c.uploadedAt),
+      rangeLabel:
+        c.contractStart || c.contractEnd
+          ? `${c.contractStart ? formatDate(c.contractStart) : "?"} – ${
+              c.contractEnd ? formatDate(c.contractEnd) : "?"
+            }`
+          : null,
+    });
+    contractsByEmployeeId.set(c.employeeId, list);
+  }
+
   const status = parseStatusFilter(sp.status);
   const rows: DirectoryRow[] = employees
     .filter((e) =>
@@ -38,6 +70,7 @@ export default async function AdminEmployeesPage({
       role: e.role,
       active: e.active,
       managerName: e.manager?.name ?? null,
+      contracts: contractsByEmployeeId.get(e.id) ?? [],
     }));
 
   const managers = employees
@@ -110,6 +143,7 @@ export default async function AdminEmployeesPage({
           rows={rows}
           basePath="/admin/employees"
           showImpersonate
+          showContracts
         />
       </Card>
     </div>
