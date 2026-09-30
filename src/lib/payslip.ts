@@ -58,13 +58,16 @@ export async function computePayslipsForPeriod(
     throw new PayPeriodNotClosedError();
   }
 
-  const [company, people] = await Promise.all([
+  // Not filtered to currently-active people: someone who resigned after this
+  // period closed still needs a payslip on record for it.
+  const [company, allPeople] = await Promise.all([
     getCompanySettings(),
     prisma.user.findMany({
-      where: { active: true, role: { in: ["EMPLOYEE", "MANAGER"] } },
+      where: { role: { in: ["EMPLOYEE", "MANAGER"] } },
       select: {
         id: true,
         name: true,
+        active: true,
         profile: { select: { salaryPhp: true } },
       },
       orderBy: { name: "asc" },
@@ -78,8 +81,16 @@ export async function computePayslipsForPeriod(
   // present, and a past weekday with neither counts as absent.
   const tally = await tallyAttendance(
     period,
-    people.map((p) => p.id)
+    allPeople.map((p) => p.id)
   );
+
+  // Currently-active people always show; inactive people only show if they
+  // actually had attendance in this period.
+  const people = allPeople.filter((p) => {
+    if (p.active) return true;
+    const t = tally.get(p.id);
+    return !!t && t.present + t.absent > 0;
+  });
 
   const payslips: Payslip[] = people.map((p) => {
     const t = tally.get(p.id) ?? { present: 0, absent: 0 };

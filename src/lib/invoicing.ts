@@ -60,17 +60,19 @@ type SalariedPerson = {
   name: string;
   firstName: string | null;
   lastName: string | null;
+  active: boolean;
   salaryUsd: number | null;
 };
 
-async function activeSalariedPeople(): Promise<SalariedPerson[]> {
+async function allSalariedPeople(): Promise<SalariedPerson[]> {
   const rows = await prisma.user.findMany({
-    where: { active: true, role: { in: ["EMPLOYEE", "MANAGER"] } },
+    where: { role: { in: ["EMPLOYEE", "MANAGER"] } },
     select: {
       id: true,
       name: true,
       firstName: true,
       lastName: true,
+      active: true,
       profile: { select: { salaryUsd: true } },
     },
     orderBy: { name: "asc" },
@@ -80,8 +82,28 @@ async function activeSalariedPeople(): Promise<SalariedPerson[]> {
     name: r.name,
     firstName: r.firstName,
     lastName: r.lastName,
+    active: r.active,
     salaryUsd: r.profile?.salaryUsd != null ? Number(r.profile.salaryUsd) : null,
   }));
+}
+
+/**
+ * Split for a billed date range: "actuals" (what was billed for work already
+ * done) must include people who've since gone inactive but had attendance in
+ * that range — this is a historical record. "Projections" (the next cycle's
+ * advance) is forward-looking and correctly stays limited to currently-active
+ * people, since you don't advance-pay someone who's already left.
+ */
+function splitForRange(
+  people: SalariedPerson[],
+  attendance: Map<string, { present: number; absent: number }>
+): { actuals: SalariedPerson[]; projections: SalariedPerson[] } {
+  const actuals = people.filter((p) => {
+    if (p.active) return true;
+    const t = attendance.get(p.id);
+    return !!t && t.present + t.absent > 0;
+  });
+  return { actuals, projections: people.filter((p) => p.active) };
 }
 
 /** Present / absent day counts per employee over a date range (inclusive). */
@@ -125,11 +147,15 @@ export async function suggestInvoiceLines(input: {
   previousInvoiceId: string | null;
 }): Promise<SuggestedInvoice> {
   const { billedFrom, billedTo } = input;
-  const [company, people, attendance] = await Promise.all([
+  const [company, allPeople, attendance] = await Promise.all([
     getCompanySettings(),
-    activeSalariedPeople(),
+    allSalariedPeople(),
     attendanceInRange(billedFrom, billedTo),
   ]);
+  const { actuals: actualsPeople, projections: activePeople } = splitForRange(
+    allPeople,
+    attendance
+  );
 
   const warnings: string[] = [];
   const lines: ClientInvoiceLine[] = [];
@@ -165,7 +191,7 @@ export async function suggestInvoiceLines(input: {
 
   // 2. Actual Cost of Salary
   let actualCost = 0;
-  for (const person of people) {
+  for (const person of actualsPeople) {
     if (person.salaryUsd == null) {
       warnings.push(`${person.name} has no monthly USD rate on file — not included in Actual Cost of Salary.`);
       continue;
@@ -186,7 +212,7 @@ export async function suggestInvoiceLines(input: {
 
   // 3. Advance Salary (next cycle)
   const advanceSalary = round2(
-    people.reduce((sum, p) => sum + (p.salaryUsd ?? 0), 0)
+    activePeople.reduce((sum, p) => sum + (p.salaryUsd ?? 0), 0)
   );
   lines.push({
     description: "Advance Salary",
@@ -227,14 +253,21 @@ export async function computeInvoiceBreakdown(
 ): Promise<InvoiceBreakdown | null> {
   if (!billedFrom || !billedTo) return null;
 
-  const [people, attendance] = await Promise.all([
-    activeSalariedPeople(),
+  const [allPeople, attendance] = await Promise.all([
+    allSalariedPeople(),
     attendanceInRange(billedFrom, billedTo),
   ]);
-  const salaried = people.filter((p) => p.salaryUsd != null);
-  if (salaried.length === 0) return null;
+  const { actuals: actualsPeople, projections: activePeople } = splitForRange(
+    allPeople,
+    attendance
+  );
+  const salariedActuals = actualsPeople.filter((p) => p.salaryUsd != null);
+  const salariedProjections = activePeople.filter((p) => p.salaryUsd != null);
+  if (salariedActuals.length === 0 && salariedProjections.length === 0) {
+    return null;
+  }
 
-  const actuals = salaried.map((p) => {
+  const actuals = salariedActuals.map((p) => {
     const t = attendance.get(p.id) ?? { present: 0, absent: 0 };
     const worked = t.present + t.absent;
     const rate = p.salaryUsd as number;
@@ -258,7 +291,7 @@ export async function computeInvoiceBreakdown(
     { rate: 0, payout: 0 }
   );
 
-  const projections = salaried.map((p) => ({
+  const projections = salariedProjections.map((p) => ({
     lastName: p.lastName ?? p.name,
     firstName: p.firstName ?? "",
     salary: p.salaryUsd as number,

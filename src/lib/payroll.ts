@@ -70,11 +70,15 @@ export async function computePayrollForPeriod(
     throw new PayPeriodNotClosedError();
   }
 
-  const people = await prisma.user.findMany({
-    where: { active: true, role: { in: ["EMPLOYEE", "MANAGER"] } },
+  // Not filtered to currently-active people: someone who resigned after this
+  // period closed still needs to show up in it — this is a historical record
+  // of what was paid, not a live roster.
+  const allPeople = await prisma.user.findMany({
+    where: { role: { in: ["EMPLOYEE", "MANAGER"] } },
     select: {
       id: true,
       name: true,
+      active: true,
       profile: { select: { salaryPhp: true } },
     },
     orderBy: { name: "asc" },
@@ -91,8 +95,17 @@ export async function computePayrollForPeriod(
   // present, and a past weekday with neither counts as absent.
   const tally = await tallyAttendance(
     period,
-    people.map((p) => p.id)
+    allPeople.map((p) => p.id)
   );
+
+  // Currently-active people always show; inactive people only show if they
+  // actually had attendance in this period (otherwise they were never part
+  // of it — e.g. someone still mid-onboarding).
+  const people = allPeople.filter((p) => {
+    if (p.active) return true;
+    const t = tally.get(p.id);
+    return !!t && t.present + t.absent > 0;
+  });
 
   const warnings: string[] = [];
   const rows: PayrollRow[] = people.map((p) => {
