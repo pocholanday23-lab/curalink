@@ -226,9 +226,22 @@ export async function setEmployeeActiveAction(
 
   await prisma.user.update({ where: { id }, data: { active } });
 
+  // Deactivating someone doesn't retroactively end their past assignments
+  // (those stay on record for historical reporting) but their still-open
+  // ones shouldn't keep showing as current work. Reactivating never revives
+  // old assignments automatically — a returning employee gets a new one.
+  if (!active) {
+    await prisma.assignment.updateMany({
+      where: { employeeId: id, active: true },
+      data: { active: false },
+    });
+  }
+
   revalidateDirectories();
   revalidatePath(`/admin/employees/${id}`);
   revalidatePath(`/manager/directory/${id}`);
+  revalidatePath("/admin/settings");
+  revalidatePath("/admin/assignments");
 }
 
 /* ------------------------------------------------------------------ */
